@@ -19,7 +19,7 @@ import {
   sup,
 } from '../lib/utility';
 import { Cryptosystem } from './cryptosystem';
-import { LargePowerModulo } from '../lib/classes/large-power-modulo.class';
+import { LargePowerModulo } from '../lib/classes/large-power-modulo';
 import { PRIME_NUMBERS } from '../lib/constants';
 
 

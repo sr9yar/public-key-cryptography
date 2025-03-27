@@ -9,7 +9,7 @@ import {
 import { LoggerType } from '../types/logger.type';
 import { logger } from './logger';
 
-import { LargePowerModulo } from './large-power-modulo.class';
+import { LargePowerModulo } from './large-power-modulo';
 import { LegendreSymbol } from './legendre-symbol';
 import { EuclideanAlgorithm } from './euclidean-algorithm';
 

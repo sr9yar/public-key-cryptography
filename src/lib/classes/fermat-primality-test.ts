@@ -1,9 +1,9 @@
-import { LargePowerModulo } from "./large-power-modulo.class";
+import { LargePowerModulo } from './large-power-modulo';
 import {
   LoggerType,
-} from "../types/logger.type";
-import { getRandomNumber } from "../utility";
-import { logger } from "./logger";
+} from '../types/logger.type';
+import { getRandomNumber } from '../utility';
+import { logger } from './logger';
 
 
 // https://---------.io/utC37e3uQpr1dRD8WJD9NM

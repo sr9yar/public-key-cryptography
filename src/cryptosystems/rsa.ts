@@ -12,7 +12,7 @@ import {
 } from '../lib/utility';
 import { Cryptosystem } from './cryptosystem';
 import { FermatPrimalityTest } from '../lib/classes/fermat-primality-test';
-import { LargePowerModulo } from '../lib/classes/large-power-modulo.class';
+import { LargePowerModulo } from '../lib/classes/large-power-modulo';
 
 
 

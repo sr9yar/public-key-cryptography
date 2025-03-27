@@ -1,9 +1,9 @@
-import { LoggerType } from "../types/logger.type";
+import { LoggerType } from '../types/logger.type';
 import {
   modulo,
   sup
-} from "../utility";
-import { logger } from "./logger";
+} from '../utility';
+import { logger } from './logger';
 
 
 /**

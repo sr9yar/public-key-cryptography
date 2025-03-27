@@ -1,5 +1,5 @@
-import { LoggerType } from "src/lib/types/logger.type";
-import { Logger } from "../lib/classes/logger";
+import { LoggerType } from '../lib/types/logger.type';
+import { Logger } from '../lib/classes/logger';
 
 
 
