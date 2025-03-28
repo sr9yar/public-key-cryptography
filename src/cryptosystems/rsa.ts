@@ -35,7 +35,7 @@ export class RSA extends Cryptosystem {
 
   private ptext: string[] = 'code'.split('');
 
-  private ctext: string[] = 'code'.split('');
+  private ctext: string[] = '110010001100110000011110010101111110101'.split('');
 
   private blocks: number[] = [];
 
@@ -71,7 +71,7 @@ export class RSA extends Cryptosystem {
    * Generate keys
    */
   generateKeys() {
-    this.log(`RSA. Generating keys. Step 1. p=${this.p}, q=${this.q}.`);
+    this.log(`[RSA] Generating keys. Step 1. p=${this.p}, q=${this.q}.`, 'color:yellow');
 
     // шаг 1 - set p, q , проверить на простоту
     const pTest = new FermatPrimalityTest(this.p, 5);
@@ -86,24 +86,24 @@ export class RSA extends Cryptosystem {
     }
 
     // step 2
-    this.log(`RSA. Generating keys. Step 2.`);
+    this.log(`[RSA] Generating keys. Step 2.`);
     this.n = this.p * this.q
     this.log(`n = p × q = ${this.p} × ${this.q} = ${this.n}.`);
 
     // step 3
-    this.log(`RSA. Generating keys. Step 3.`);
+    this.log(`[RSA] Generating keys. Step 3.`);
     // φ(n) = (p-1)(q-1)
     const Fn = (this.p - 1) * (this.q - 1);
     this.log(`φ(n) = (p-1) × (q-1) = (${this.p}-1) × (${this.q}-1) = ${Fn}`);
 
     // step 4
-    this.log(`RSA. Generating keys. Step 4.`);
+    this.log(`[RSA] Generating keys. Step 4.`);
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 19-10
     // finding e , use Euler function
     this.e = 13;
 
     // step 5
-    this.log(`RSA. Generating keys. Step 5.`);
+    this.log(`[RSA] Generating keys. Step 5.`);
     // finding d, which is e⁻¹ (inverse)
 
     const dEuclideanAlgorithm = new EuclideanAlgorithm();
@@ -122,7 +122,7 @@ export class RSA extends Cryptosystem {
 
 
     // step 6
-    this.log(`RSA. Generating keys. Step 6.`);
+    this.log(`[RSA] Generating keys. Step 6.`);
     // pair (e, n) - public key
     // d - private key
     this.log(`Public key: (e, n) - (${this.e}, ${this.n})`);
@@ -136,7 +136,7 @@ export class RSA extends Cryptosystem {
    * @returns max block size
    */
   setBlocksize(): number {
-    this.log(`Calculating blocksize`);
+    console.log(`[RSA] Calculating blocksize`, 'color:yellow');
 
     this.blocksize = Math.floor(Math.log2(this.n));
 
@@ -202,7 +202,7 @@ export class RSA extends Cryptosystem {
    */
   prepareBlocks() {
 
-    console.log('Preparing blocks for encoding')
+    console.log(`[RSA] Preparing blocks for encoding`, 'color:yellow');
 
     const plaintextBin = plaintextToBinArray(this.ptext).flat().join('');
 
@@ -223,6 +223,8 @@ export class RSA extends Cryptosystem {
   encrypt(): string {
     this.clearLogs();
 
+    this.log(`[RSA] Starting encryption`, 'color:yellow');
+
     this.setBlocksize();
     this.prepareBlocks();
 
@@ -239,11 +241,11 @@ export class RSA extends Cryptosystem {
       encryptedBlocks.push(encryptedDec);
     }
 
-    const encryptedBlocksDec = encryptedBlocks.map((n: number) => decToBin(n).padStart(this.blocksizeAscii, '0'));
+    const encryptedBlocksBin = encryptedBlocks.map((n: number) => decToBin(n).padStart(this.blocksizeAscii, '0'));
     this.log(`Encrypted blocks (decimal): ${encryptedBlocks}`);
-    this.log(`Encrypted blocks (binary): ${encryptedBlocksDec}`);
+    this.log(`Encrypted blocks (binary): ${encryptedBlocksBin}`);
 
-    const encrypted = encryptedBlocks.join('');
+    const encrypted = encryptedBlocksBin.join('');
     this.log(`Full string (encrypted): ${encrypted}`);
     const bBlocks = slice(encrypted, 8);
     this.log(`8 bit blocks: ${bBlocks}`);
@@ -266,11 +268,11 @@ export class RSA extends Cryptosystem {
    */
   decrypt(text?: string): string {
     this.clearLogs();
-    this.log(`Starting decryption`);
+    this.log(`[RSA] Starting decryption`, 'color:yellow');
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 57-00
 
     // code 0110010001100110000011110010101111110101
-    // text ??= this.ciphertext;
+    text ??= this.ciphertext;
     // 6425,4217,3061
 
     const slicedBlocks: string[] = slice(text, this.blocksizeAscii);

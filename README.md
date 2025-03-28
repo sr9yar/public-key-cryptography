@@ -11,7 +11,7 @@ Web interface
 
 ```bash
 
-npm i --save public-key-cryptography
+npm i --save @sr9yar/public-key-cryptography
 
 ```
 

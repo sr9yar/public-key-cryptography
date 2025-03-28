@@ -36,7 +36,7 @@ export class ElGamal extends Cryptosystem {
 
   private ptext: string[] = 'code'.split('');
 
-  private ctext: string[] = 'code'.split('');
+  private ctext: string[] = '10111011011111111011101100101100101110111100100110111011001011111011101100111111'.split('');
 
   private blocks: number[] = [];
 

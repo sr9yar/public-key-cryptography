@@ -35,7 +35,7 @@ export class Rabin extends Cryptosystem {
 
   private ptext: string[] = 'code'.split('');
 
-  private ctext: string[] = 'code'.split('');
+  private ctext: string[] = '0100010101101110000011110011010101001100010010111011'.split('');
 
   private blocks: number[] = [];
 
@@ -165,7 +165,7 @@ export class Rabin extends Cryptosystem {
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 1-04-00
 
     // code 0100010101101110000011110011010101001100010010111011
-    // text ??= this.ciphertext;
+    text ??= this.ciphertext;
     // 2221,6204,6822,1211
 
     const slicedBlocks: string[] = slice(text, this.blocksizeAscii);
