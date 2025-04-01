@@ -78,6 +78,7 @@ export class ElGamal extends Cryptosystem {
     }
     this._p = value;
   }
+
   /**
    * 
    */

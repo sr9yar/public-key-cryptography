@@ -4,7 +4,6 @@
 //   RSA,
 // } from './cryptosystems';
 
-
 // const enc = new RSA();
 // const enc = new ElGamal();
 // const enc = new Rabin();

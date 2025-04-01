@@ -15,6 +15,9 @@ import { FermatPrimalityTest } from '../lib/classes/fermat-primality-test';
 import { LargePowerModulo } from '../lib/classes/large-power-modulo';
 
 
+/**
+ * https://crypto.stackexchange.com/questions/1448/definition-of-textbook-rsa/1449#1449
+ */
 
 // RSA 
 // https://---------.io/utC37e3uQpr1dRD8WJD9NM
@@ -136,7 +139,7 @@ export class RSA extends Cryptosystem {
    * @returns max block size
    */
   setBlocksize(): number {
-    console.log(`[RSA] Calculating blocksize`, 'color:yellow');
+    this.log(`[RSA] Calculating blocksize`, 'color:yellow');
 
     this.blocksize = Math.floor(Math.log2(this.n));
 
@@ -202,18 +205,17 @@ export class RSA extends Cryptosystem {
    */
   prepareBlocks() {
 
-    console.log(`[RSA] Preparing blocks for encoding`, 'color:yellow');
+    this.log(`[RSA] Preparing blocks for encoding`, 'color:yellow');
 
     const plaintextBin = plaintextToBinArray(this.ptext).flat().join('');
 
-    console.log(`Plain text string: ${plaintextBin}`);
+    this.log(`Plain text string: ${plaintextBin}`);
 
     const blocks = slice(plaintextBin, this.blocksize);
 
-    console.log(`Blocks in binary representation: ${blocks}`);
+    this.log(`Blocks in binary representation: ${blocks}`);
     this.blocks = blocks.map((s: string) => Number.parseInt(s, 2));
-    console.log(`Blocks in decimal representation: ${this.blocks}`);
-
+    this.log(`Blocks in decimal representation: ${this.blocks}`);
 
   }
 
@@ -258,7 +260,7 @@ export class RSA extends Cryptosystem {
 
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 57 00
 
-    return '';
+    return encrypted;
   }
 
 
