@@ -298,12 +298,15 @@ export function slice(str: string, size: number, pad: boolean = true): string[] 
  * size
  * pad - add adding to the last block
  */
-export function sliceStart(str: string, size: number = 8): string[] {
+export function sliceStart(str: string, size: number = 8, pad: boolean = false): string[] {
 
   const blocks: string[] = [];
 
   for (let i = 0; i < str.length; i += size) {
-    const substr = str.slice(i, i + size);
+    let substr = str.slice(i, i + size);
+    if (pad) {
+      substr += '0'.repeat(size - substr.length);
+    }
     blocks.push(substr);
   }
 
@@ -584,27 +587,16 @@ export function shuffle(array: any[]) {
 
 
 /**
- * Base64 for ASCII
- * chars are modulo 256
+ * Binary string to base64
  */
-export function toBase64(text: string) {
-  const arr = Uint8Array.from(Array.from(text).map((letter: string) => letter.charCodeAt(0)));
-  const binaryArray: string[] = arr.reduce((a: string[], n: number) => {
-    a.push(n.toString(2).padStart(8, '0'));
-    return a;
-  }, []);
+export function binStringtoBase64(binaryString: string) {
 
-  let binaryString = binaryArray.join('');
   const binaryStringLength = binaryString.length;
   // Pad the binary string to be divisible by 6
   const padding = (6 - (binaryStringLength % 6)) % 6;
   binaryString += '0'.repeat(padding);
 
-  for (let i = 0; i < padding; i++) {
-    binaryArray.push('0');
-  }
-
-  const base64arr = slice(binaryArray.join(''), 6, false);
+  const base64arr = slice(binaryString, 6, false);
   const charsList = base64arr.reduce((a: string[], n: string) => {
     if (BASE64_BIN.has(n)) {
       const char = BASE64_BIN.get(n);
@@ -625,13 +617,33 @@ export function toBase64(text: string) {
   // it represents will be zero-padded on its least significant bits, 
   // at most two pad characters may occur at the end of the encoded stream).
 
-  let base64String = charsList.join('');
+  let base64 = charsList.join('');
 
   // Add padding '=' characters if needed
   const paddingChars = Math.ceil((binaryStringLength % 3) / 1.5);
-  base64String += '='.repeat(paddingChars);
+  base64 += '='.repeat(paddingChars);
 
-  return base64String;
+  return base64;
+
+}
+
+
+
+/**
+ * Base64 for ASCII
+ * chars are modulo 256
+ */
+export function toBase64(text: string) {
+
+  const arr = Uint8Array.from(Array.from(text).map((letter: string) => letter.charCodeAt(0)));
+  const binaryArray: string[] = arr.reduce((a: string[], n: number) => {
+    a.push(n.toString(2).padStart(8, '0'));
+    return a;
+  }, []);
+
+  const binaryString = binaryArray.join('');
+
+  return binStringtoBase64(binaryString);
 }
 
 
@@ -643,11 +655,38 @@ export function toBase64(text: string) {
  */
 export function fromBase64(base64: string): string {
 
+  const binaryString = fromBase64ToBinString(base64);
+
+  // Split into 8-bit chunks and convert to characters
+  let text: string = '';
+
+  const chunks = sliceStart(binaryString, 8);
+
+  for (let i = 0; i < chunks.length; i++) {
+    const byte = chunks[i];
+    if (byte.length === 8) {
+      const charCode = parseInt(byte, 2);
+      text += String.fromCharCode(charCode);
+    }
+  }
+
+  return text;
+}
+
+
+
+/**
+ * Convert a base64 string back to binary string
+ * @param base64 
+ * @returns 
+ */
+export function fromBase64ToBinString(base64: string): string {
+
   // Remove padding characters and keep track of how many there were
   let paddingCount: number = 0;
   if (base64.endsWith('==')) {
     paddingCount = 2;
-    base64 = base64.slice(0, -2);
+    base64 = base64.slice(0, base64.length - 2);
   } else if (base64.endsWith('=')) {
     paddingCount = 1;
     base64 = base64.slice(0, -1);
@@ -656,25 +695,15 @@ export function fromBase64(base64: string): string {
   // Convert each Base64 character to its 6-bit binary representation
   let binaryString: string = '';
   for (const char of base64) {
-    binaryString += BASE64_CHAR.get(char) || '000000';
+    if (BASE64_CHAR.has(char)) {
+      binaryString += BASE64_CHAR.get(char) || '000000';
+    }
   }
 
-  // Remove padding bits that were added during encoding
+  // Remove padding bits that were added during encodings
   if (paddingCount > 0) {
     binaryString = binaryString.slice(0, -paddingCount * 2);
   }
 
-  // Split into 8-bit chunks and convert to characters
-  let result: string = '';
-
-  const chunks = sliceStart(binaryString, 8);
-  for (let i = 0; i < chunks.length; i++) {
-    const byte = chunks[i];
-    if (byte.length === 8) {
-      const charCode = parseInt(byte, 2);
-      result += String.fromCharCode(charCode);
-    }
-  }
-
-  return result;
+  return binaryString;
 }

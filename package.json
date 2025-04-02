@@ -1,6 +1,6 @@
 {
   "name": "@sr9yar/public-key-cryptography",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Public Key Cryptography",
   "type": "module",
   "main": "dist/index.js",
@@ -15,7 +15,8 @@
     "build": "rimraf dist/ && tsc && cp package.json dist/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/main.ts",
-    "watch": "nodemon ./src/main.ts"
+    "watch": "nodemon ./src/main.ts",
+    "start": "nodemon ./src/main.ts"
   },
   "author": "Yaroslav",
   "repository": "https://github.com/sr9yar/public-key-cryptography",

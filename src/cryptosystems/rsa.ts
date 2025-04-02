@@ -1,12 +1,13 @@
 import { EuclideanAlgorithm } from '../lib/classes/euclidean-algorithm';
 import {
   binArrayToAscii,
+  binStringtoBase64,
   binToDec,
   decToBin,
   ensurePositive,
+  fromBase64ToBinString,
   plaintextToBinArray,
   slice,
-  stringToArray,
   sub,
   sup,
 } from '../lib/utility';
@@ -18,7 +19,7 @@ import { LargePowerModulo } from '../lib/classes/large-power-modulo';
 /**
  * https://crypto.stackexchange.com/questions/1448/definition-of-textbook-rsa/1449#1449
  */
-
+//
 // RSA 
 // https://---------.io/utC37e3uQpr1dRD8WJD9NM
 
@@ -30,17 +31,16 @@ import { LargePowerModulo } from '../lib/classes/large-power-modulo';
 
 
 
-
 /**
  * RSA encryption class
  */
 export class RSA extends Cryptosystem {
 
-  private ptext: string[] = 'code'.split('');
-
-  private ctext: string[] = '110010001100110000011110010101111110101'.split('');
-
   private blocks: number[] = [];
+
+  private ptext: string = 'code'; // Y29kZQ==
+  // yMweV+o=
+  private ctext: string = 'GRmDyv1'; // 110010001100110000011110010101111110101
 
   private blocksEncrypted: string[] = [];
   private blocksDecrypted: string[] = [];
@@ -74,7 +74,7 @@ export class RSA extends Cryptosystem {
    * Generate keys
    */
   generateKeys() {
-    this.log(`[RSA] Generating keys. Step 1. p=${this.p}, q=${this.q}.`, 'color:yellow');
+    this.log(`[RSA] Generating keys. Step 1. p=${this.p}, q=${this.q}.`, 'color:blue');
 
     // шаг 1 - set p, q , проверить на простоту
     const pTest = new FermatPrimalityTest(this.p, 5);
@@ -133,13 +133,14 @@ export class RSA extends Cryptosystem {
   }
 
 
+
   /**
    * Limit blocksize
    * ⌊log₂n⌋ = blocksize
    * @returns max block size
    */
   setBlocksize(): number {
-    this.log(`[RSA] Calculating blocksize`, 'color:yellow');
+    this.log(`[RSA] Calculating blocksize`, 'color:blue');
 
     this.blocksize = Math.floor(Math.log2(this.n));
 
@@ -167,7 +168,7 @@ export class RSA extends Cryptosystem {
    * Plain text string representation
    */
   get plaintext(): string {
-    return this.ptext.join('')
+    return this.ptext;
   }
 
 
@@ -176,7 +177,7 @@ export class RSA extends Cryptosystem {
    * Cipher text string representation
    */
   get ciphertext(): string {
-    return this.ctext.join('')
+    return this.ctext;
   }
 
 
@@ -186,18 +187,21 @@ export class RSA extends Cryptosystem {
    * @param text 
    */
   set plaintext(text: string) {
-    this.ptext = stringToArray(text)
+    this.ptext = text;
   }
 
 
 
   /**
    * Set ciphertext
+   * from base64 to binary sequence
    * @param text 
    */
-  set ciphertext(text: string | string[]) {
-    this.ctext = stringToArray(text)
+  set ciphertext(base64: string) {
+    this.ctext = base64;
   }
+
+
 
   /**
    * Split plain text into blocks and convert to dec
@@ -205,9 +209,9 @@ export class RSA extends Cryptosystem {
    */
   prepareBlocks() {
 
-    this.log(`[RSA] Preparing blocks for encoding`, 'color:yellow');
+    this.log(`[RSA] Preparing blocks for encoding`, 'color:blue');
 
-    const plaintextBin = plaintextToBinArray(this.ptext).flat().join('');
+    const plaintextBin = plaintextToBinArray(this.plaintext).flat().join('');
 
     this.log(`Plain text string: ${plaintextBin}`);
 
@@ -219,13 +223,15 @@ export class RSA extends Cryptosystem {
 
   }
 
+
+
   /**
    * Encrypt
    */
   encrypt(): string {
     this.clearLogs();
 
-    this.log(`[RSA] Starting encryption`, 'color:yellow');
+    this.log(`[RSA] Starting encryption`, 'color:blue');
 
     this.setBlocksize();
     this.prepareBlocks();
@@ -247,20 +253,23 @@ export class RSA extends Cryptosystem {
     this.log(`Encrypted blocks (decimal): ${encryptedBlocks}`);
     this.log(`Encrypted blocks (binary): ${encryptedBlocksBin}`);
 
+    this.blocksEncrypted = encryptedBlocksBin;
+
     const encrypted = encryptedBlocksBin.join('');
     this.log(`Full string (encrypted): ${encrypted}`);
-    const bBlocks = slice(encrypted, 8);
-    this.log(`8 bit blocks: ${bBlocks}`);
+    const bBlocks = slice(encrypted, 6);
+    this.log(`6 bit blocks: ${bBlocks}`);
 
-    this.blocksEncrypted = bBlocks;
 
-    const ciphertext = binArrayToAscii(this.blocksEncrypted);
+    // const ciphertext = binArrayToAscii(this.blocksEncrypted);
+    const ciphertext = binStringtoBase64(bBlocks.join(''));
+
     this.log(`Ciphertext: ${ciphertext}`);
     this.log(`\n`);
 
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 57 00
 
-    return encrypted;
+    return ciphertext;
   }
 
 
@@ -268,23 +277,34 @@ export class RSA extends Cryptosystem {
   /**
    * Decrypt
    */
-  decrypt(text?: string): string {
+  decrypt(base64?: string): string {
     this.clearLogs();
-    this.log(`[RSA] Starting decryption`, 'color:yellow');
+    this.log(`[RSA] Starting decryption`, 'color:blue');
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 57-00
 
     // code 0110010001100110000011110010101111110101
-    text ??= this.ciphertext;
+
+    const text = base64 ?? this.ciphertext;
+
+    this.log(`${text}`);
+
+    const binString = fromBase64ToBinString(text);
     // 6425,4217,3061
 
-    const slicedBlocks: string[] = slice(text, this.blocksizeAscii);
+    this.log(`${binString}`);
+
+    const slicedBlocks: string[] = slice(binString, this.blocksizeAscii, false);
     this.log(`Encrypted blocks (binary): ${slicedBlocks}`);
     const slicedBlocksDec: number[] = slicedBlocks.map((n: string) => binToDec(n));
     this.log(`Encrypted blocks (decimal): ${slicedBlocksDec}`);
 
+    // slicedBlocks.pop();
+    // slicedBlocksDec.pop();
+
     const decryptedBlocks: string[] = [];
     const decryptedBlocksDec: number[] = [];
 
+    //
     // m = block ^ d mod n
     //
     for (let i = 0; i < slicedBlocksDec.length; i++) {
@@ -296,9 +316,9 @@ export class RSA extends Cryptosystem {
       const decryptedBin: string = decToBin(decryptedDec).padStart(this.blocksize, '0');
       this.log(`m${sub(i + 1)} = ${b}${sup(this.d)} mod ${this.n} = ${decryptedDec} = ${decryptedBin}`);
       decryptedBlocks.push(decryptedBin);
-      decryptedBlocksDec.push(decryptedDec);
     }
 
+    // 99,1782,1125
     this.log(`Decrypted blocks (decimal): ${decryptedBlocksDec}`);
     this.log(`Decrypted blocks (binary): ${decryptedBlocks}`);
 
