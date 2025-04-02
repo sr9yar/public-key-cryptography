@@ -628,7 +628,7 @@ export function toBase64(text: string) {
   let base64String = charsList.join('');
 
   // Add padding '=' characters if needed
-  const paddingChars = Math.floor((binaryStringLength % 3) / 1.5);
+  const paddingChars = Math.ceil((binaryStringLength % 3) / 1.5);
   base64String += '='.repeat(paddingChars);
 
   return base64String;
