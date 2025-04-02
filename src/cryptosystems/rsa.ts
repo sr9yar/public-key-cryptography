@@ -255,7 +255,7 @@ export class RSA extends Cryptosystem {
 
     this.blocksEncrypted = encryptedBlocksBin;
 
-    const encrypted = encryptedBlocksBin.join('');
+    const encrypted = this.blocksEncrypted.join('');
     this.log(`Full string (encrypted): ${encrypted}`);
     const bBlocks = slice(encrypted, 6);
     this.log(`6 bit blocks: ${bBlocks}`);
