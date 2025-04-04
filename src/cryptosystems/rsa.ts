@@ -61,7 +61,6 @@ export class RSA extends Cryptosystem {
   // blocksize
   blocksize: number = 12;
 
-
   /**
    * Constructor
    */
@@ -105,6 +104,7 @@ export class RSA extends Cryptosystem {
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 19-10
     // finding e , use Euler function
     this.e = getRandomCoprime(Fn, 12);
+    this.log(`e = ${this.e} (coprime with ${Fn})`);
 
     // step 5
     this.log(`[RSA] Generating keys. Step 5.`);
@@ -203,6 +203,13 @@ export class RSA extends Cryptosystem {
   }
 
 
+  /**
+   * Result of the Euler's Phi function calculation
+   */
+  get eulerPhiFunction(): number {
+    const Fn = (this.p - 1) * (this.q - 1);
+    return Fn;
+  }
 
   /**
    * Split plain text into blocks and convert to dec
