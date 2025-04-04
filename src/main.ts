@@ -14,11 +14,14 @@
 
 // enc.plaintext = 'code';
 
+// enc.e = 17;
 // enc.generateKeys();
+
 
 // enc.encrypt();
 // enc.decrypt();
 
+// console.log(enc.e);
 
 
 // console.log(toBase64('code111'));

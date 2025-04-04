@@ -54,7 +54,7 @@ export class RSA extends Cryptosystem {
   // Public key
   n: number = 7739;
   // Public key
-  _e: number = null; // 13
+  private _e: number = null; // 13
   // private key
   d: number = 6397;
   // blocksize for bin to ASCII conversion
@@ -109,7 +109,7 @@ export class RSA extends Cryptosystem {
       this._e = getRandomCoprime(Fn, 12);
     }
 
-    this.log(`e = ${this.e} (coprime with ${Fn})`);
+    this.log(`e = ${this._e} (coprime with ${Fn})`);
 
     // step 5
     this.log(`[RSA] Generating keys. Step 5.`);
@@ -121,7 +121,7 @@ export class RSA extends Cryptosystem {
     this.log(`[RSA] Generating keys. Step 6.`);
     // pair (e, n) - public key
     // d - private key
-    this.log(`Public key: (e, n) - (${this.e}, ${this.n})`);
+    this.log(`Public key: (e, n) - (${this._e}, ${this.n})`);
     this.log(`Private key: d - ${this.d}`);
   }
 
@@ -136,7 +136,7 @@ export class RSA extends Cryptosystem {
 
     const dEuclideanAlgorithm = new EuclideanAlgorithm();
     dEuclideanAlgorithm.logger = { log: this.log.bind(this) };
-    const results = dEuclideanAlgorithm.calc(this.e, Fn);
+    const results = dEuclideanAlgorithm.calc(this._e, Fn);
     const d = results[1];
     this.d = ensurePositive(d, Fn);
     this.log(`\n`);
@@ -214,7 +214,7 @@ export class RSA extends Cryptosystem {
    * Setter for e
    */
   set e(value: number) {
-    this.e = value;
+    this._e = value;
     this.calculateD();
   }
 
@@ -224,7 +224,7 @@ export class RSA extends Cryptosystem {
    * Getter for e
    */
   get e(): number {
-    return this.e;
+    return this._e;
   }
 
 
@@ -285,11 +285,11 @@ export class RSA extends Cryptosystem {
     // m = block ^ e mod n
     for (let i = 0; i < this.blocks.length; i++) {
       const b = this.blocks[i];
-      const p = new LargePowerModulo(b, this.e, this.n);
+      const p = new LargePowerModulo(b, this._e, this.n);
       p.logger = { log: this.log.bind(this) };
       const results = p.printResults();
       const encryptedDec: number = results[0];
-      this.log(`m${sub(i + 1)} = ${b}${sup(this.e)} mod ${this.n} = ${encryptedDec}`);
+      this.log(`m${sub(i + 1)} = ${b}${sup(this._e)} mod ${this.n} = ${encryptedDec}`);
       encryptedBlocks.push(encryptedDec);
     }
 
@@ -386,7 +386,7 @@ export class RSA extends Cryptosystem {
    * Public key
    */
   get publicKey(): [number, number] {
-    return [this.e, this.n];
+    return [this._e, this.n];
   }
 
 
