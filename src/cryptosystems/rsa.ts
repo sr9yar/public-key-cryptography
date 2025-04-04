@@ -1,5 +1,6 @@
 import { EuclideanAlgorithm } from '../lib/classes/euclidean-algorithm';
 import {
+  areCoprime,
   binArrayToAscii,
   binStringtoBase64,
   binToDec,
@@ -53,7 +54,7 @@ export class RSA extends Cryptosystem {
   // Public key
   n: number = 7739;
   // Public key
-  e: number = 13;
+  _e: number = null; // 13
   // private key
   d: number = 6397;
   // blocksize for bin to ASCII conversion
@@ -103,12 +104,35 @@ export class RSA extends Cryptosystem {
     this.log(`[RSA] Generating keys. Step 4.`);
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 19-10
     // finding e , use Euler function
-    this.e = getRandomCoprime(Fn, 12);
+    // if e is already set, don't change it unless it's not coprime with φ(n)
+    if (this._e === null || !areCoprime(this._e, Fn)) {
+      this._e = getRandomCoprime(Fn, 12);
+    }
+
     this.log(`e = ${this.e} (coprime with ${Fn})`);
 
     // step 5
     this.log(`[RSA] Generating keys. Step 5.`);
     // finding d, which is e⁻¹ (inverse)
+
+    this.calculateD();
+
+    // step 6
+    this.log(`[RSA] Generating keys. Step 6.`);
+    // pair (e, n) - public key
+    // d - private key
+    this.log(`Public key: (e, n) - (${this.e}, ${this.n})`);
+    this.log(`Private key: d - ${this.d}`);
+  }
+
+
+
+  /**
+   * Calculate d when e is set
+   */
+  calculateD(): number {
+
+    const Fn = this.eulerPhiFunction;
 
     const dEuclideanAlgorithm = new EuclideanAlgorithm();
     dEuclideanAlgorithm.logger = { log: this.log.bind(this) };
@@ -124,13 +148,7 @@ export class RSA extends Cryptosystem {
     }
     this.log(`d = ${d}${positiveD}`);
 
-
-    // step 6
-    this.log(`[RSA] Generating keys. Step 6.`);
-    // pair (e, n) - public key
-    // d - private key
-    this.log(`Public key: (e, n) - (${this.e}, ${this.n})`);
-    this.log(`Private key: d - ${this.d}`);
+    return this.d;
   }
 
 
@@ -189,6 +207,24 @@ export class RSA extends Cryptosystem {
    */
   set plaintext(text: string) {
     this.ptext = text;
+  }
+
+
+  /**
+   * Setter for e
+   */
+  set e(value: number) {
+    this.e = value;
+    this.calculateD();
+  }
+
+
+
+  /**
+   * Getter for e
+   */
+  get e(): number {
+    return this.e;
   }
 
 
