@@ -707,3 +707,25 @@ export function fromBase64ToBinString(base64: string): string {
 
   return binaryString;
 }
+
+
+
+/**
+ * Get random coprime less than n
+ * 
+ * @param n - to be co prime with
+ * @param notLess - not less than the indicated number
+ */
+export function getRandomCoprime(n: number, notLess: number = 10) {
+
+  let coprime: number;
+
+  for (let i = notLess; i < n; i++) {
+    if (areCoprime(i, n)) {
+      coprime = i;
+      break;
+    }
+  }
+
+  return coprime;
+}

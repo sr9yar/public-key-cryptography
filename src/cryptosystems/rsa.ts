@@ -6,6 +6,7 @@ import {
   decToBin,
   ensurePositive,
   fromBase64ToBinString,
+  getRandomCoprime,
   plaintextToBinArray,
   slice,
   sub,
@@ -103,7 +104,7 @@ export class RSA extends Cryptosystem {
     this.log(`[RSA] Generating keys. Step 4.`);
     // https://---------.io/utC37e3uQpr1dRD8WJD9NM 19-10
     // finding e , use Euler function
-    this.e = 13;
+    this.e = getRandomCoprime(Fn, 12);
 
     // step 5
     this.log(`[RSA] Generating keys. Step 5.`);
@@ -159,7 +160,7 @@ export class RSA extends Cryptosystem {
     this.log(`⌊log₂n⌋ = ⌊log₂${this.n}}⌋ = ${this.blocksize}`);
     this.log(`\n`);
 
-    this.blocksizeAscii = this.blocksize + 1
+    this.blocksizeAscii = this.blocksize + 1;
     return this.blocksize;
   }
 

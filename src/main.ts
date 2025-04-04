@@ -24,6 +24,3 @@
 // console.log(toBase64('code111'));
 // console.log(toBase64('code11'));
 // console.log(toBase64('code1'));
-
-
-
