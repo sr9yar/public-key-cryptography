@@ -259,7 +259,7 @@ export function binArrayToAscii(arr: string[]): string {
  * 
  * str
  * size
- * pad - add adding to the last block
+ * pad - add padding to the last block
  */
 export function slice(str: string, size: number, pad: boolean = true): string[] {
 
@@ -358,11 +358,14 @@ export function log(base: number, n: number, depth: number = 20): number {
  * @param pad number of digits to pad
  */
 export function decToBin(n: number | string, pad: number = 0): string {
-  const bin = Number.parseInt(String(n), 10).toString(2);
-  if (pad > 0) {
-    return bin.padStart(pad, '0');
+  const bin: number = Number.parseInt(String(n), 10);
+  if (Number.isNaN(bin)) {
+    throw new Error(`${n} is not a parsable number.`);
   }
-  return bin;
+  if (pad > 0) {
+    return bin.toString(2).padStart(pad, '0');
+  }
+  return bin.toString(2);
 }
 
 

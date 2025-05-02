@@ -46,7 +46,7 @@ export class ElGamal extends Cryptosystem {
 
   // параметры домена
   // Big prime number
-  _p: number = 211;
+  _p: number = 277; // 211 1619
   // g ∈ F*ₚ
   g: number = 3;
   // Private key. 1 < x < p - 1
@@ -64,8 +64,9 @@ export class ElGamal extends Cryptosystem {
    */
   constructor() {
     super();
-    // this.generateP();
-    // this.generateG();
+    this.generateP();
+    this.generateG();
+    this.generateKeys();
   }
 
   /**
@@ -92,9 +93,10 @@ export class ElGamal extends Cryptosystem {
    * Choose p
    */
   generateP() {
-    const p = getRandomInArray(PRIME_NUMBERS.slice(25, 35));
+    const p = getRandomInArray(PRIME_NUMBERS.slice(245, 260));
+    this._p = p;
     this.log(`[ElGamal] Generating p. p=${this.p}.`, 'color:yellow');
-    return this._p = p;
+    return p;
   }
 
 
@@ -162,7 +164,7 @@ export class ElGamal extends Cryptosystem {
 
     // this outer iteration is necessary
     // in a theoretically possible scenario
-    // when the inner loop wilters of possible g's to early
+    // when the inner loop filters out possible g's to early
     //
     // in such case, this loop will start the test again
     let testingIteration = 0;
@@ -195,6 +197,10 @@ export class ElGamal extends Cryptosystem {
           break;
         }
       }
+
+      if (testingIteration > 100_000) {
+        throw new Error(`Too many testing interations`);
+      }
     }
     this.log(`Acceptable g: ${acceptableG}`);
 
@@ -224,12 +230,15 @@ export class ElGamal extends Cryptosystem {
     this.log(`[ElGamal] x must meet the following condition 1 < x < p - 1: 1 < ${this.x} < ${this.p - 1}`);
 
     // Step 2. h = g ^ x (mod p)
-    const hMod = new LargePowerModulo(this.g, this.x, this.p);
-    const result = hMod.calc();
-    this.h = result[0];
-
     // this.h = moduloPositive(this.g ** this.x, this.p);
     this.log(`[ElGamal] Generating keys. Step 2. Calculating public key.`);
+
+    const hMod = new LargePowerModulo(this.g, this.x, this.p);
+    hMod.logger = { log: this.log.bind(this) };
+    //const result = hMod.calc();
+    const result = hMod.printResults();
+    this.h = result[0];
+
     this.log(`h = g${sup('x')} (mod p) = ${this.g} ^ ${this.x} (mod ${this.p}) = ${this.h}`);
 
     // Step 3. 
@@ -253,7 +262,7 @@ export class ElGamal extends Cryptosystem {
     // Step 1 
     this.setBlocksize();
     this.prepareBlocks();
-    this.setSessionKey();
+    // this.setSessionKey();
 
     this.log(`[ElGamal] Encrypting using private key ${this.privateKey} and public key ${this.publicKey}.`, 'color:yellow');
     const encryptedBlocks: number[] = [];
@@ -268,7 +277,7 @@ export class ElGamal extends Cryptosystem {
 
     const largePoC1 = new LargePowerModulo(this.g, k, this.p);
     const [C1] = largePoC1.calc();
-    const C1Bin = decToBin(C1, 8);
+    const C1Bin = decToBin(C1, this.blocksize);
 
     // m = (C1, C2)
     for (let i = 0; i < this.blocks.length; i++) {
@@ -278,7 +287,7 @@ export class ElGamal extends Cryptosystem {
       const largePo = new LargePowerModulo(this.h, k, this.p);
       const [hk] = largePo.calc();
       const C2 = moduloPositive(m * hk, this.p);
-      const C2Bin = decToBin(C2, 8);
+      const C2Bin = decToBin(C2, this.blocksize);
 
       // C1 = gᵏ (mod p)
       this.log(`C₁${sub(i + 1)} = g${sup('k')} (mod p) = ${this.g}${sup(k)} (mod ${this.p}) = ${C1} = ${C1Bin}`);
@@ -290,8 +299,9 @@ export class ElGamal extends Cryptosystem {
       encryptedBlocks.push(binToDec(`${C1Bin}${C2Bin}`));
     }
 
-    const encryptedBlocksBin = encryptedBlocks.map((n: number) => decToBin(n, 16));
+    const encryptedBlocksBin = encryptedBlocks.map((n: number) => decToBin(n, this.blocksize * 2));
     this.blocksEncrypted = encryptedBlocksBin;
+
     this.log(`Encrypted blocks (decimal): ${encryptedBlocks}`);
     this.log(`Encrypted blocks (binary): ${this.blocksEncrypted}`);
 
@@ -318,9 +328,12 @@ export class ElGamal extends Cryptosystem {
     // code 01001101011111110100110100101100010011011100100101001101001011110100110100111111
     text ??= this.ciphertext;
     // 19839,19756,19913,19759,19775
+    this.log(`Encrypted blocks (binary ciphertext): ${this.ciphertext}`);
 
-    const slicedBlocks: [string, string][] = (slice(text, 16)).map((t: string) => slice(t, 8) as [string, string]);
+    const slicedBlocks: [string, string][] = (slice(text, this.blocksize * 2)).map((t: string) => slice(t, this.blocksize) as [string, string]);
+    // const slicedBlocks: [string, string][] = (slice(text, this.blocksize * 2)).map((t: string) => slice(t, this.blocksize) as [string, string]);
     this.log(`Encrypted blocks (binary): ${slicedBlocks}`);
+
     const slicedBlocksDec: [number, number][] = slicedBlocks.map((b: [string, string]) => [binToDec(b[0]), binToDec(b[1])]);
     this.log(`Encrypted blocks (decimal): ${slicedBlocksDec}`);
 
@@ -347,7 +360,7 @@ export class ElGamal extends Cryptosystem {
         = ${m}`);
 
       decryptedBlocksDec.push(m);
-      decryptedBlocks.push(decToBin(m, 7));
+      decryptedBlocks.push(decToBin(m, this.blocksize));
 
     }
 
@@ -382,9 +395,8 @@ export class ElGamal extends Cryptosystem {
     this.log(`[ElGamal] Calculating blocksize.`, 'color:yellow');
 
     this.bs = Math.floor(Math.log2(this.p));
-
     this.log(`⌊log₂p⌋ = ⌊log₂${this.p}⌋ = ${this.bs}`);
-    this.log(`Blocksize is ${this.bs}.`);
+    this.log(`Blocksize is ${this.bs}.`, 'color:cyan');
     this.log(`\n`);
 
     return this.bs;
@@ -429,6 +441,7 @@ export class ElGamal extends Cryptosystem {
    */
   setSessionKey() {
     this.k = getRandomNumber(1, this.p - 1);
+    this.log(`[ElGamal] Session key is a random number between ${1} and ${this.p - 1}: ${this.k}`);
     return this.k;
   }
 
