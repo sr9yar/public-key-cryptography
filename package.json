@@ -1,6 +1,6 @@
 {
   "name": "@sr9yar/public-key-cryptography",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Public Key Cryptography",
   "type": "module",
   "main": "dist/index.js",

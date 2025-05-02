@@ -49,9 +49,9 @@ export class ElGamal extends Cryptosystem {
 
   // параметры домена
   // Big prime number
-  _p: number = 13457; // 211 277 1619 10007 13457
+  _p: number = 10009; // 211 277 1619 10007 13457 
   // g ∈ F*ₚ
-  g: number = 3;
+  g: number = 5004; // 3;
   // Private key. 1 < x < p - 1
   x: number = 35;
   // Public key. h = g ^ x (mod p)
@@ -67,7 +67,7 @@ export class ElGamal extends Cryptosystem {
    */
   constructor() {
     super();
-    // this.generateP();
+    this.generateP();
     this.generateG();
     this.generateKeys();
   }
@@ -294,9 +294,9 @@ export class ElGamal extends Cryptosystem {
       const C2Bin = decToBin(C2, this.blocksize);
 
       // C1 = gᵏ (mod p)
-      this.log(`C₁${sub(i + 1)} = g${sup('k')} (mod p) = ${this.g}${sup(k)} (mod ${this.p}) = ${C1} = ${C1Bin}`);
+      this.log(`C₁${sub(i + 1)} = g${sup('k')} (mod p) = ${this.g}${sup(k)} (mod ${this.p}) = ${C1} = ${C1Bin} (chars ${C1Bin.length})`);
       // C2 = m * hᵏ (mod p)
-      this.log(`C₂${sub(i + 1)} = m × h${sup('k')} (mod p) = ${m} × ${this.h}${sup(k)} (mod ${this.p}) = ${C2} = ${C2Bin}`);
+      this.log(`C₂${sub(i + 1)} = m × h${sup('k')} (mod p) = ${m} × ${this.h}${sup(k)} (mod ${this.p}) = ${C2} = ${C2Bin} (chars ${C1Bin.length})`);
 
       this.log(`\tCiphertext: (${C1}, ${C2})`, 'color:blue');
 
@@ -338,7 +338,7 @@ export class ElGamal extends Cryptosystem {
     this.log(`Encrypted blocks (binary): ${JSON.stringify(slicedBlocks)}`);
 
     const slicedBlocksDec: [number, number][] = slicedBlocks.map((b: [string, string]) => [binToDec(b[0]), binToDec(b[1])]);
-    this.log(`Encrypted blocks (decimal): ${slicedBlocksDec}`);
+    this.log(`Encrypted blocks (decimal): ${JSON.stringify(slicedBlocksDec)}`);
 
     const decryptedBlocks: string[] = [];
     const decryptedBlocksDec: number[] = [];
@@ -353,13 +353,14 @@ export class ElGamal extends Cryptosystem {
       const [Cx] = new LargePowerModulo(C1, this.x, this.p).calc();
       const [, , CxInverse] = new EuclideanAlgorithm(this.p, Cx).calc();
 
-      const CxI = C2 * CxInverse;
+      const CxInversePositive = moduloPositive(CxInverse, this.p);
+      const CxI = C2 * CxInversePositive;
       const m = moduloPositive(CxI, this.p);
 
       this.log(`m${sub(i + 1)} = C₂${sub(i + 1)} × (C1₁${sub(i + 1)}${sup('x')})${sup('-1')} mod p
         = ${C2} × (${C1}${sup(this.x)})${sup('-1')} mod ${this.p}
         = ${C2} × ${Cx}${sup('-1')} mod ${this.p}
-        = ${C2} × ${CxInverse} mod ${this.p}
+        = ${C2} × ${CxInversePositive} mod ${this.p}
         = ${CxI} mod ${this.p}
         = ${m}`);
 

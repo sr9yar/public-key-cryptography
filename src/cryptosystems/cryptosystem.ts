@@ -1,5 +1,5 @@
 import { LoggerType } from '../lib/types/logger.type';
-import { Logger } from '../lib/classes/logger';
+import { logger } from '../lib/classes/logger';
 
 
 
@@ -20,7 +20,7 @@ export abstract class Cryptosystem {
   // private key getter
   public abstract privateKey: any;
 
-  logger?: LoggerType = new Logger();
+  logger?: LoggerType = logger;
 
   /**
    * Set print to console
