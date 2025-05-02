@@ -272,7 +272,6 @@ export function slice(str: string, size: number, pad: boolean = true): string[] 
     const start = i - size;
     const end = i;
     const b: string = str.slice(start, end);
-    logger.log(`b ${b}`);
     if (b) {
       blocks.unshift(b);
     }
