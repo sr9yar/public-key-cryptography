@@ -12,6 +12,7 @@ import {
 } from "./constants";
 import { AsciiBinArray } from "./types/ascii-bin-array.type";
 import { AsciiChar } from "./types/ascii-char.type";
+import { logger } from "./classes";
 
 
 
@@ -219,10 +220,10 @@ export function plaintextToBinArray(plaintext: string | string[]): AsciiBinArray
     if (ASCII_MAP.has(letter)) {
       const asciiCode: AsciiChar = ASCII_MAP.get(letter);
       const asciiBin = asciiCode.bin.padStart(8, '0').split('') as AsciiBinArray;
-      console.log(`${letter} = ${asciiCode.dec}₁₀ = ${asciiCode.bin}₂`)
+      logger.log(`${letter} = ${asciiCode.dec}₁₀ = ${asciiCode.bin}₂`)
       arr.push(asciiBin);
     } else {
-      console.warn(`Character ${letter} is not in ASCII.`)
+      logger.warn(`Character ${letter} is not in ASCII.`)
     }
   }
 
@@ -242,10 +243,10 @@ export function binArrayToAscii(arr: string[]): string {
     const bin: string = arr[i];
     if (BIN_TO_ASCII.has(bin)) {
       const asciiChar: AsciiChar = BIN_TO_ASCII.get(bin);
-      console.log(`${bin}₂ = ${asciiChar.dec}₁₀ = ${asciiChar.char}`)
+      logger.log(`${bin}₂ = ${asciiChar.dec}₁₀ = ${asciiChar.char}`)
       ciphertext += asciiChar.char;
     } else {
-      console.warn(`bin ${bin} is not in ASCII map.`)
+      logger.warn(`bin ${bin} is not in ASCII map.`)
     }
   }
 
@@ -271,7 +272,10 @@ export function slice(str: string, size: number, pad: boolean = true): string[] 
     const start = i - size;
     const end = i;
     const b: string = str.slice(start, end);
-    blocks.unshift(b);
+    logger.log(`b ${b}`);
+    if (b) {
+      blocks.unshift(b);
+    }
   }
 
   if (i) {
@@ -358,6 +362,9 @@ export function log(base: number, n: number, depth: number = 20): number {
  * @param pad number of digits to pad
  */
 export function decToBin(n: number | string, pad: number = 0): string {
+  if (!n && n !== 0) {
+    throw new Error(`n (${n}) cannot be empty.`);
+  }
   const bin: number = Number.parseInt(String(n), 10);
   if (Number.isNaN(bin)) {
     throw new Error(`${n} is not a parsable number.`);
@@ -487,7 +494,7 @@ export function getAllFactors(n: number) {
     let divisor: number = 2;
     while (n >= 2) {
       while (n % divisor === 0) {
-        factors.set(divisor, (factors[divisor] || 0) + 1);
+        factors.set(divisor, (factors.get(divisor) || 0) + 1);
         n /= divisor;
       }
       divisor++;
@@ -560,7 +567,7 @@ export function findOrderInGroup(element: number, prime: number): number | null 
 
   while (value !== 1) {
     value = moduloPositive(value * element, prime);
-    // console.log(new LargePowerModulo(value, element, prime).calc());
+    // logger.log(new LargePowerModulo(value, element, prime).calc());
     // [value] = new LargePowerModulo(value, element, prime).calc();
     order++;
   }
@@ -605,7 +612,7 @@ export function binStringtoBase64(binaryString: string) {
       const char = BASE64_BIN.get(n);
       a.push(char);
     } else {
-      console.warn(`${n} is not in BASE64_BIN map.`)
+      logger.warn(`${n} is not in BASE64_BIN map.`)
     }
     return a;
   }, []);

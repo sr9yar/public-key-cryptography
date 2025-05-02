@@ -20,7 +20,10 @@ import {
 } from '../lib/utility';
 import { Cryptosystem } from './cryptosystem';
 import { LargePowerModulo } from '../lib/classes/large-power-modulo';
-import { PRIME_NUMBERS } from '../lib/constants';
+import {
+  // PRIME_NUMBERS,
+  PRIME_NUMBERS_10K,
+} from '../lib/constants';
 
 
 
@@ -46,7 +49,7 @@ export class ElGamal extends Cryptosystem {
 
   // параметры домена
   // Big prime number
-  _p: number = 277; // 211 1619
+  _p: number = 13457; // 211 277 1619 10007 13457
   // g ∈ F*ₚ
   g: number = 3;
   // Private key. 1 < x < p - 1
@@ -64,7 +67,7 @@ export class ElGamal extends Cryptosystem {
    */
   constructor() {
     super();
-    this.generateP();
+    // this.generateP();
     this.generateG();
     this.generateKeys();
   }
@@ -93,7 +96,8 @@ export class ElGamal extends Cryptosystem {
    * Choose p
    */
   generateP() {
-    const p = getRandomInArray(PRIME_NUMBERS.slice(245, 260));
+    const p = getRandomInArray(PRIME_NUMBERS_10K);
+    // const p = getRandomInArray(PRIME_NUMBERS.slice(245, 260));
     this._p = p;
     this.log(`[ElGamal] Generating p. p=${this.p}.`, 'color:yellow');
     return p;
@@ -198,7 +202,7 @@ export class ElGamal extends Cryptosystem {
         }
       }
 
-      if (testingIteration > 100_000) {
+      if (testingIteration > 10) {
         throw new Error(`Too many testing interations`);
       }
     }
@@ -330,9 +334,8 @@ export class ElGamal extends Cryptosystem {
     // 19839,19756,19913,19759,19775
     this.log(`Encrypted blocks (binary ciphertext): ${this.ciphertext}`);
 
-    const slicedBlocks: [string, string][] = (slice(text, this.blocksize * 2)).map((t: string) => slice(t, this.blocksize) as [string, string]);
-    // const slicedBlocks: [string, string][] = (slice(text, this.blocksize * 2)).map((t: string) => slice(t, this.blocksize) as [string, string]);
-    this.log(`Encrypted blocks (binary): ${slicedBlocks}`);
+    const slicedBlocks: [string, string][] = (slice(text, this.blocksize * 2, true)).map((t: string) => slice(t, this.blocksize) as [string, string]);
+    this.log(`Encrypted blocks (binary): ${JSON.stringify(slicedBlocks)}`);
 
     const slicedBlocksDec: [number, number][] = slicedBlocks.map((b: [string, string]) => [binToDec(b[0]), binToDec(b[1])]);
     this.log(`Encrypted blocks (decimal): ${slicedBlocksDec}`);
@@ -349,6 +352,7 @@ export class ElGamal extends Cryptosystem {
 
       const [Cx] = new LargePowerModulo(C1, this.x, this.p).calc();
       const [, , CxInverse] = new EuclideanAlgorithm(this.p, Cx).calc();
+
       const CxI = C2 * CxInverse;
       const m = moduloPositive(CxI, this.p);
 
