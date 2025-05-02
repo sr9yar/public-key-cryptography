@@ -241,6 +241,9 @@ export function binArrayToAscii(arr: string[]): string {
 
   for (let i = 0; i < arr.length; i++) {
     const bin: string = arr[i];
+    if (bin === '00000000') {
+      continue;
+    }
     if (BIN_TO_ASCII.has(bin)) {
       const asciiChar: AsciiChar = BIN_TO_ASCII.get(bin);
       logger.log(`${bin}₂ = ${asciiChar.dec}₁₀ = ${asciiChar.char}`)
