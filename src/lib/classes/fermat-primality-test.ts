@@ -2,7 +2,10 @@ import { LargePowerModulo } from './large-power-modulo';
 import {
   LoggerType,
 } from '../types/logger.type';
-import { getRandomNumber } from '../utility';
+import {
+  getRandomNumber,
+  sup,
+} from '../utility';
 import { logger } from './logger';
 
 
@@ -75,7 +78,7 @@ export class FermatPrimalityTest {
 
     let numberIsPrime: boolean = true;
 
-    this.logger.log(`\n\t\t\tСлучайное число\tr\tСоставное\t`);
+    this.logger.log(`\n\t\t\tСлучайное число\tr\tСоставное\t\n`);
 
     for (let i = 0; i < this.k; i++) {
       // step 1
@@ -84,7 +87,7 @@ export class FermatPrimalityTest {
       const r = this.calculateR(randomNumber);
       // step 3
       const isC = this.isComposite(r);
-      this.logger.log(`\tИтерация ${i}: \t${randomNumber}\t${r}\t${isC}\t`);
+      this.logger.log(`\tИтерация ${i + 1}: \t${randomNumber}\t${r}\t${isC}\t\n`);
 
       if (isC) {
         numberIsPrime = false;
@@ -95,7 +98,7 @@ export class FermatPrimalityTest {
 
     if (numberIsPrime) {
       const probability: number = 1 / 2 ** this.k;
-      this.logger.log(`${this.n} is prime. Probability of an error is ${probability} (${this.k} iterations).`);
+      this.logger.log(`${this.n} is prime. Probability of an error is 1/2${sup('k')}=1/2${sup(this.k)}=${probability}  (${this.k} iterations).`);
     } else {
       this.logger.log(`${this.n} is not prime.`);
     }

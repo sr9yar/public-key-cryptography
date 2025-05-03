@@ -11,14 +11,14 @@
 
 
 // // const enc = new RSA();
-// const enc = new ElGamal();
+// const enc = new ElGamal(13499);
 // // const enc = new Rabin();
 // // enc.plaintext = 'code 111 !@!#E@ +++ xui';
 // // enc.e = 17;
 // // enc.generateKeys();  
 
-// enc.p = 10009;
-// enc.g = 5004;
+// // enc.p = 10009;
+// // enc.g = 5004;
 
 // enc.encrypt();
 // enc.decrypt();

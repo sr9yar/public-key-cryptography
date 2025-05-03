@@ -52,7 +52,7 @@ export class ElGamal extends Cryptosystem {
 
   // параметры домена
   // Big prime number
-  _p: number = 13499 // 10009 211 277 1619 10007 13457 
+  _p: number = 13499; // 10009 211 277 1619 10007 13457 
   // g ∈ F*ₚ
   g: number = 6749; // 5004 3
   // Private key. 1 < x < p - 1
@@ -68,9 +68,13 @@ export class ElGamal extends Cryptosystem {
   /**
    * Constructor
    */
-  constructor() {
+  constructor(p?: number) {
     super();
-    this.generateP();
+    if (typeof p === 'number') {
+      this._p = p;
+    } else {
+      this.generateP();
+    }
     this.generateG();
     this.generateKeys();
   }
@@ -110,8 +114,9 @@ export class ElGamal extends Cryptosystem {
 
   /**
    * must be g ∈ F*ₚ
+   * topAcceptable - percent of accebtable g values
    */
-  generateG() {
+  generateG(topAcceptable: number = 0.5) {
 
     // get all factors of a number
     this.logger.log(`[ElGamal] Generating g. p=${this.p}.`, 'color:yellow');
@@ -121,7 +126,7 @@ export class ElGamal extends Cryptosystem {
 
     // We agree that top ten elements are acceptable (large enough)
     // to be selected as g
-    const topAcceptable = 0.5;
+    //const topAcceptable = 0.5;
     const topPercent = Math.ceil(factors.length * topAcceptable);
     const acceptableNumber = topPercent < 1 ? 1 : topPercent;
     const acceptableOrders = factors.slice(factors.length - acceptableNumber, factors.length);
