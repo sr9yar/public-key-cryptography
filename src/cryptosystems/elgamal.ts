@@ -74,8 +74,10 @@ export class ElGamal extends Cryptosystem {
     } else {
       this.generateP();
     }
-    this.generateG();
-    this.generateKeys();
+    if (!this.g) {
+      this.generateG();
+    }
+    this.generateKeys(this.x);
   }
 
   /**
