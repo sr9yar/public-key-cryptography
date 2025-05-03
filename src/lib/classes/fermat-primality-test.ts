@@ -18,7 +18,9 @@ export class FermatPrimalityTest {
   logger: LoggerType = logger;
 
   // test number
-  n: number = 9007199254740881;
+  // biggest prime that we can test - 9007199254740881
+  // biggest composite - 9007199254740991
+  n: number = 9007199254740991; // 9007199254740881
 
   // numberOfIterations
   k: number = 10;
@@ -63,7 +65,8 @@ export class FermatPrimalityTest {
    * Run the test
    */
   isPrime(): boolean {
-    this.logger.log(`Тест Ферма на простоту. n=${this.n}, k=${this.k}`);
+    this.logger.log(`☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰`);
+    this.logger.log(`Тест Ферма на простоту. n=${this.n}, k=${this.k}\n`);
 
     if (this.isEven()) {
       this.logger.log(`${this.n} is even. It is not prime.`);

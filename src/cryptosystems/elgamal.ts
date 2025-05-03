@@ -24,7 +24,7 @@ import {
   // PRIME_NUMBERS,
   PRIME_NUMBERS_10K,
 } from '../lib/constants';
-import { logger } from 'src/lib/classes';
+import { logger } from '../lib/classes';
 
 
 
@@ -52,9 +52,9 @@ export class ElGamal extends Cryptosystem {
 
   // параметры домена
   // Big prime number
-  _p: number = 134999 // 10009 211 277 1619 10007 13457 
+  _p: number = 13499 // 10009 211 277 1619 10007 13457 
   // g ∈ F*ₚ
-  g: number = 67499; // 5004 3
+  g: number = 6749; // 5004 3
   // Private key. 1 < x < p - 1
   x: number = 35; // x = 35, p = 211, g =3
   // Public key. h = g ^ x (mod p)
