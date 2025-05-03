@@ -53,16 +53,16 @@ export class ElGamal extends Cryptosystem {
   // Big prime number
   _p: number = 13499; // 10009 211 277 1619 10007 13457 
   // g ∈ F*ₚ
-  g: number = 6749; // 5004 3
+  g: number = 13496; // 5004 3
   // Private key. 1 < x < p - 1
-  x: number = 35; // x = 35, p = 211, g =3
+  x: number = 5049; // 35; // x = 35, p = 211, g =3
   // Public key. h = g ^ x (mod p)
-  h: number = 197;
+  h: number = 5581; // 197;
   // Session key
-  k: number = 7;
+  k: number = 1616; // 7;
 
   // blocksize
-  bs: number = 7;
+  bs: number = 13; // 7
 
   /**
    * Constructor
