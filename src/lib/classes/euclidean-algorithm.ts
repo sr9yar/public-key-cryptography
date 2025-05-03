@@ -43,6 +43,9 @@ export class EuclideanAlgorithm {
     this.a = a;
     this.b = b;
 
+    this.initA = a;
+    this.initB = b;
+
     this.x2 = 1;
     this.x1 = 0;
     this.y2 = 0;
@@ -216,29 +219,18 @@ export class EuclideanAlgorithm {
     return this._y1[this.prevRow] ?? 0;
   }
 
-
-
-  get initA(): number {
-    if (this._a?.length) {
-      this._a[0];
-    }
-    return 0;
-  }
-
-  get initB(): number {
-    if (this._b?.length) {
-      this._b[0];
-    }
-    return 0;
-  }
+  initA: number = 0;
+  initB: number = 0;
 
   // ====================================
   constructor(a?: number, b?: number) {
     if (typeof a === 'number') {
       this.a = a;
+      this.initA = a;
     }
     if (typeof b === 'number') {
       this.b = b;
+      this.initB = b;
     }
   }
 

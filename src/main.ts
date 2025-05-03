@@ -16,11 +16,11 @@
 // // enc.plaintext = 'code 111 !@!#E@ +++ xui';
 // // enc.e = 17;
 // // enc.generateKeys();  
+// enc.generateG();
+// // enc.p = 10009; 
+// // enc.g = 5004; 
 
-// // enc.p = 10009;
-// // enc.g = 5004;
-
-// enc.encrypt();
+// enc.encrypt(1616);
 // enc.decrypt();
 
 // // console.log(enc.e);

@@ -117,7 +117,7 @@ export class ElGamal extends Cryptosystem {
    * must be g ∈ F*ₚ
    * topAcceptable - percent of accebtable g values
    */
-  generateG(topAcceptable: number = 0.5) {
+  generateG(topAcceptable: number = 0.2) {
 
     // get all factors of a number
     this.logger.log(`[ElGamal] Generating g. p=${this.p}.`, 'color:yellow');
@@ -130,7 +130,7 @@ export class ElGamal extends Cryptosystem {
     // to be selected as g
     //const topAcceptable = 0.5;
     const topPercent = Math.ceil(factors.length * topAcceptable);
-    const acceptableNumber = topPercent < 1 ? 1 : topPercent;
+    const acceptableNumber = topPercent <= 2 ? 2 : topPercent;
     const acceptableOrders = factors.slice(factors.length - acceptableNumber, factors.length);
     const testFactors = new Set(factors);
     testFactors.delete(1);
