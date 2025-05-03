@@ -385,7 +385,7 @@ export class ElGamal extends Cryptosystem {
       const CxI = C2 * CxInversePositive;
       const m = moduloPositive(CxI, this.p);
 
-      this.logger.log(`m${sub(i + 1)} = C₂${sub(i + 1)} × (C1₁${sub(i + 1)}${sup('x')})${sup('-1')} mod p
+      this.logger.log(`m${sub(i + 1)} = C₂${sub(i + 1)} × (C₁${sub(i + 1)}${sup('x')})${sup('-1')} mod p
         = ${C2} × (${C1}${sup(this.x)})${sup('-1')} mod ${this.p}
         = ${C2} × ${Cx}${sup('-1')} mod ${this.p}
         = ${C2} × ${CxInversePositive} mod ${this.p}
