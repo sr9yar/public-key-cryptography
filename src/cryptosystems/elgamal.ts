@@ -298,11 +298,12 @@ export class ElGamal extends Cryptosystem {
     // const [C1] = largePoC1.calc();
     const [C1] = largePoC1.printResults();
     const C1Bin = decToBin(C1, this.blocksize);
+    this.logger.log(`C1 = ${C1}`);
 
     const largePo = new LargePowerModulo(this.h, k, this.p);
     //const [hk] = largePo.calc();
     const [hk] = largePo.printResults();
-    this.logger.log(`h${sup('k')} (mod p) = ${this.h}${sup(k)} (mod ${this.p})= ${hk})`);
+    this.logger.log(`h${sup('k')} (mod p) = ${this.h}${sup(k)} (mod ${this.p}) = ${hk}`);
 
     // m = (C1, C2)
     for (let i = 0; i < this.blocks.length; i++) {
@@ -315,7 +316,7 @@ export class ElGamal extends Cryptosystem {
       // C1 = gᵏ (mod p)
       this.logger.log(`C₁${sub(i + 1)} = g${sup('k')} (mod p) = ${this.g}${sup(k)} (mod ${this.p}) = ${C1} = ${C1Bin} (chars ${C1Bin.length})`);
       // C2 = m * hᵏ (mod p)
-      this.logger.log(`C₂${sub(i + 1)} = m × h${sup('k')} (mod p) = ${m} × ${this.h}${sup(k)} (mod ${this.p}) = ${C2} = ${C2Bin} (chars ${C1Bin.length})`);
+      this.logger.log(`C₂${sub(i + 1)} = m${sub(i + 1)} × h${sup('k')} (mod p) = ${m} × ${this.h}${sup(k)} (mod ${this.p}) = ${C2} = ${C2Bin} (chars ${C1Bin.length})`);
 
       this.logger.log(`\tCiphertext: (${C1}, ${C2})`, 'color:blue');
 
@@ -365,17 +366,22 @@ export class ElGamal extends Cryptosystem {
     // C2 / C1 ^ x
     // C2 * ( C1  ^ x ) ^ -1
     //
+
+    const [C1] = slicedBlocksDec[0];
+
+    this.logger.log(`C1 (${C1}) power of private key x (${this.x})`);
+    const [Cx] = new LargePowerModulo(C1, this.x, this.p).printResults();
+    this.logger.log(`Calculating the inverse element`);
+    const ea = new EuclideanAlgorithm(this.p, Cx);
+    const [, , CxInverse] = ea.calc();
+    ea.printResults();
+
+    const CxInversePositive = moduloPositive(CxInverse, this.p);
+    this.logger.log(`Inverse element: ${CxInversePositive}`);
+
     for (let i = 0; i < slicedBlocksDec.length; i++) {
       const [C1, C2] = slicedBlocksDec[i];
 
-      // const [Cx] = new LargePowerModulo(C1, this.x, this.p).calc();
-      // const [, , CxInverse] = new EuclideanAlgorithm(this.p, Cx).calc();
-      const [Cx] = new LargePowerModulo(C1, this.x, this.p).printResults();
-      const ea = new EuclideanAlgorithm(this.p, Cx);
-      const [, , CxInverse] = ea.calc();
-      ea.printResults();
-
-      const CxInversePositive = moduloPositive(CxInverse, this.p);
       const CxI = C2 * CxInversePositive;
       const m = moduloPositive(CxI, this.p);
 
