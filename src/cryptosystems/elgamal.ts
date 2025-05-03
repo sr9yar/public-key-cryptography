@@ -241,13 +241,16 @@ export class ElGamal extends Cryptosystem {
 
     // Step 1. 1 < x < p - 1
     this.logger.log(`[ElGamal] Generating keys. Step 1. p=${this.p}.`, 'color:yellow');
+
+    this.logger.log(`[ElGamal] x (private key) is a random number.`);
+
     this.x = x ?? getRandomNumber(1, this.p - 1);
     // this.x = 35; // for testing / can be removed
     this.logger.log(`[ElGamal] x must meet the following condition 1 < x < p - 1: 1 < ${this.x} < ${this.p - 1}`);
 
     // Step 2. h = g ^ x (mod p)
     // this.h = moduloPositive(this.g ** this.x, this.p);
-    this.logger.log(`[ElGamal] Generating keys. Step 2. Calculating public key.`);
+    this.logger.log(`[ElGamal] Generating keys. Step 2. Calculating public key (h).`);
 
     const hMod = new LargePowerModulo(this.g, this.x, this.p);
     // hMod.logger = { log: this.logger.log.bind(this) };
@@ -296,14 +299,16 @@ export class ElGamal extends Cryptosystem {
     const [C1] = largePoC1.printResults();
     const C1Bin = decToBin(C1, this.blocksize);
 
+    const largePo = new LargePowerModulo(this.h, k, this.p);
+    //const [hk] = largePo.calc();
+    const [hk] = largePo.printResults();
+    this.logger.log(`h${sup('k')} (mod p) = ${this.h}${sup(k)} (mod ${this.p})= ${hk})`);
+
     // m = (C1, C2)
     for (let i = 0; i < this.blocks.length; i++) {
       const m = this.blocks[i];
       this.logger.log(`m${sub(i + 1)} = ${decToBin(m)}₂ = ${m}₁₀`);
 
-      const largePo = new LargePowerModulo(this.h, k, this.p);
-      //const [hk] = largePo.calc();
-      const [hk] = largePo.printResults();
       const C2 = moduloPositive(m * hk, this.p);
       const C2Bin = decToBin(C2, this.blocksize);
 
@@ -326,7 +331,6 @@ export class ElGamal extends Cryptosystem {
     const encrypted = encryptedBlocksBin.join('');
     this.logger.log(`Full string (encrypted): ${encrypted}`);
     this.ciphertext = encrypted;
-
 
     this.logger.log(`\n`);
 
