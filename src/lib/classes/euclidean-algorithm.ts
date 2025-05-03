@@ -295,7 +295,8 @@ export class EuclideanAlgorithm {
   }
 
   /**
-   * printResults
+   * Print results of the last calculation
+   * (calc method must be invoked first)
    */
   printResults(): void {
     this.logger.log(`Таблица Алгоритм Евклида для значений a = ${this.a}, b = ${this.b}`);
@@ -308,6 +309,7 @@ export class EuclideanAlgorithm {
     const result = this.getResult();
 
     this.logger.log(`НОД: ${result[0]}, ${result[1]}, ${result[2]}`);
+
   }
 
 }

@@ -49,9 +49,9 @@ export class ElGamal extends Cryptosystem {
 
   // параметры домена
   // Big prime number
-  _p: number = 10009; // 211 277 1619 10007 13457 
+  _p: number = 13499 // 10009 211 277 1619 10007 13457 
   // g ∈ F*ₚ
-  g: number = 5004; // 3;
+  g: number = 6749; // 5004 3
   // Private key. 1 < x < p - 1
   x: number = 35;
   // Public key. h = g ^ x (mod p)
@@ -222,7 +222,7 @@ export class ElGamal extends Cryptosystem {
    * Generate keys
    */
   generateKeys() {
-    this.clearLogs();
+    // this.clearLogs();
 
     // this.generateP();
     // this.generateG();
@@ -238,7 +238,7 @@ export class ElGamal extends Cryptosystem {
     this.log(`[ElGamal] Generating keys. Step 2. Calculating public key.`);
 
     const hMod = new LargePowerModulo(this.g, this.x, this.p);
-    hMod.logger = { log: this.log.bind(this) };
+    // hMod.logger = { log: this.log.bind(this) };
     //const result = hMod.calc();
     const result = hMod.printResults();
     this.h = result[0];
@@ -261,7 +261,7 @@ export class ElGamal extends Cryptosystem {
    * Encryption algorithm
    */
   encrypt(): string {
-    this.clearLogs();
+    // this.clearLogs();
 
     // Step 1 
     this.setBlocksize();
@@ -280,7 +280,8 @@ export class ElGamal extends Cryptosystem {
     // C2 = m * hᵏ (mod p)
 
     const largePoC1 = new LargePowerModulo(this.g, k, this.p);
-    const [C1] = largePoC1.calc();
+    // const [C1] = largePoC1.calc();
+    const [C1] = largePoC1.printResults();
     const C1Bin = decToBin(C1, this.blocksize);
 
     // m = (C1, C2)
@@ -289,7 +290,8 @@ export class ElGamal extends Cryptosystem {
       this.log(`m${sub(i + 1)} = ${decToBin(m)}₂ = ${m}₁₀`);
 
       const largePo = new LargePowerModulo(this.h, k, this.p);
-      const [hk] = largePo.calc();
+      //const [hk] = largePo.calc();
+      const [hk] = largePo.printResults();
       const C2 = moduloPositive(m * hk, this.p);
       const C2Bin = decToBin(C2, this.blocksize);
 
@@ -326,7 +328,7 @@ export class ElGamal extends Cryptosystem {
    */
   decrypt(text?: string): string {
 
-    this.clearLogs();
+    // this.clearLogs();
     this.log(`[ElGamal] Decrypting using private key ${this.privateKey} and public key ${this.publicKey}.`, `color:yellow`);
 
     // code 01001101011111110100110100101100010011011100100101001101001011110100110100111111
@@ -350,8 +352,12 @@ export class ElGamal extends Cryptosystem {
     for (let i = 0; i < slicedBlocksDec.length; i++) {
       const [C1, C2] = slicedBlocksDec[i];
 
-      const [Cx] = new LargePowerModulo(C1, this.x, this.p).calc();
-      const [, , CxInverse] = new EuclideanAlgorithm(this.p, Cx).calc();
+      // const [Cx] = new LargePowerModulo(C1, this.x, this.p).calc();
+      // const [, , CxInverse] = new EuclideanAlgorithm(this.p, Cx).calc();
+      const [Cx] = new LargePowerModulo(C1, this.x, this.p).printResults();
+      const ea = new EuclideanAlgorithm(this.p, Cx);
+      const [, , CxInverse] = ea.calc();
+      ea.printResults();
 
       const CxInversePositive = moduloPositive(CxInverse, this.p);
       const CxI = C2 * CxInversePositive;
