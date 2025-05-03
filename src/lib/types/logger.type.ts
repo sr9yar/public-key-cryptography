@@ -7,5 +7,7 @@ export type LoggerType = {
 
   clearLogs?: Function;
   setVerbosity?: Function;
+
+  logs?: string[];
 };
 

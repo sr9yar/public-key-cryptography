@@ -24,6 +24,7 @@ import {
   // PRIME_NUMBERS,
   PRIME_NUMBERS_10K,
 } from '../lib/constants';
+import { logger } from 'src/lib/classes';
 
 
 
@@ -37,6 +38,8 @@ import {
  */
 export class ElGamal extends Cryptosystem {
 
+  logger = logger;
+
   private ptext: string[] = 'code'.split('');
 
   private ctext: string[] = '10111011011111111011101100101100101110111100100110111011001011111011101100111111'.split('');
@@ -49,11 +52,11 @@ export class ElGamal extends Cryptosystem {
 
   // параметры домена
   // Big prime number
-  _p: number = 13499 // 10009 211 277 1619 10007 13457 
+  _p: number = 134999 // 10009 211 277 1619 10007 13457 
   // g ∈ F*ₚ
-  g: number = 6749; // 5004 3
+  g: number = 67499; // 5004 3
   // Private key. 1 < x < p - 1
-  x: number = 35;
+  x: number = 35; // x = 35, p = 211, g =3
   // Public key. h = g ^ x (mod p)
   h: number = 197;
   // Session key
@@ -77,7 +80,7 @@ export class ElGamal extends Cryptosystem {
    */
   set p(value: number) {
     if (!isPrime(value)) {
-      this.warn(`Paramter p must be prime. p is ${value}. Aborting`);
+      this.logger.warn(`Paramter p must be prime. p is ${value}. Aborting`);
       return;
     }
     this._p = value;
@@ -99,7 +102,7 @@ export class ElGamal extends Cryptosystem {
     const p = getRandomInArray(PRIME_NUMBERS_10K);
     // const p = getRandomInArray(PRIME_NUMBERS.slice(245, 260));
     this._p = p;
-    this.log(`[ElGamal] Generating p. p=${this.p}.`, 'color:yellow');
+    this.logger.log(`[ElGamal] Generating p. p=${this.p}.`, 'color:yellow');
     return p;
   }
 
@@ -111,10 +114,10 @@ export class ElGamal extends Cryptosystem {
   generateG() {
 
     // get all factors of a number
-    this.log(`[ElGamal] Generating g. p=${this.p}.`, 'color:yellow');
+    this.logger.log(`[ElGamal] Generating g. p=${this.p}.`, 'color:yellow');
     const factors = getAllFactors(this.p - 1);
-    this.log(`Getting all factors of p-1 (${this.p - 1}).`);
-    this.log(`Factors of ${this.p - 1}: ${factors}.`);
+    this.logger.log(`Getting all factors of p-1 (${this.p - 1}).`);
+    this.logger.log(`Factors of ${this.p - 1}: ${factors}.`);
 
     // We agree that top ten elements are acceptable (large enough)
     // to be selected as g
@@ -126,7 +129,7 @@ export class ElGamal extends Cryptosystem {
     testFactors.delete(1);
     testFactors.delete(this.p - 1);
 
-    this.log(`Acceptable orders of g, O(g): ${acceptableOrders}`);
+    this.logger.log(`Acceptable orders of g, O(g): ${acceptableOrders}`);
 
 
     // // output test
@@ -142,7 +145,7 @@ export class ElGamal extends Cryptosystem {
     //   // }
 
     //   const color = acceptableG ? 'color:white' : 'color:gray';
-    //   this.log(`O(${n}) = ${o}\t${acceptableG} ${[...ls]},  ${[...oDvivisors]}`, color);
+    //   this.logger.log(`O(${n}) = ${o}\t${acceptableG} ${[...ls]},  ${[...oDvivisors]}`, color);
     // });
 
     // 
@@ -173,7 +176,7 @@ export class ElGamal extends Cryptosystem {
     // in such case, this loop will start the test again
     let testingIteration = 0;
     while (acceptableG === 0) {
-      this.log(`Started testing an acceptable g (iteration ${testingIteration}).`);
+      this.logger.log(`Started testing an acceptable g (iteration ${testingIteration}).`);
       testingIteration++;
 
       // list of test values 
@@ -195,7 +198,7 @@ export class ElGamal extends Cryptosystem {
         ls = ls.difference(oDvivisors);
 
         const color = isAcceptable ? 'color:white' : 'color:gray';
-        this.log(`O(${next}) = ${o}\t${isAcceptable}\t${[...ls]} (excluded ${[...oDvivisors]})`, color);
+        this.logger.log(`O(${next}) = ${o}\t${isAcceptable}\t${[...ls]} (excluded ${[...oDvivisors]})`, color);
 
         if (isAcceptable) {
           break;
@@ -206,7 +209,7 @@ export class ElGamal extends Cryptosystem {
         throw new Error(`Too many testing interations`);
       }
     }
-    this.log(`Acceptable g: ${acceptableG}`);
+    this.logger.log(`Acceptable g: ${acceptableG}`);
 
     // 
     // https://cacr.uwaterloo.ca/hac/ 
@@ -228,31 +231,31 @@ export class ElGamal extends Cryptosystem {
     // this.generateG();
 
     // Step 1. 1 < x < p - 1
-    this.log(`[ElGamal] Generating keys. Step 1. p=${this.p}.`, 'color:yellow');
+    this.logger.log(`[ElGamal] Generating keys. Step 1. p=${this.p}.`, 'color:yellow');
     this.x = getRandomNumber(1, this.p - 1);
     // this.x = 35; // for testing / can be removed
-    this.log(`[ElGamal] x must meet the following condition 1 < x < p - 1: 1 < ${this.x} < ${this.p - 1}`);
+    this.logger.log(`[ElGamal] x must meet the following condition 1 < x < p - 1: 1 < ${this.x} < ${this.p - 1}`);
 
     // Step 2. h = g ^ x (mod p)
     // this.h = moduloPositive(this.g ** this.x, this.p);
-    this.log(`[ElGamal] Generating keys. Step 2. Calculating public key.`);
+    this.logger.log(`[ElGamal] Generating keys. Step 2. Calculating public key.`);
 
     const hMod = new LargePowerModulo(this.g, this.x, this.p);
-    // hMod.logger = { log: this.log.bind(this) };
+    // hMod.logger = { log: this.logger.log.bind(this) };
     //const result = hMod.calc();
     const result = hMod.printResults();
     this.h = result[0];
 
-    this.log(`h = g${sup('x')} (mod p) = ${this.g} ^ ${this.x} (mod ${this.p}) = ${this.h}`);
+    this.logger.log(`h = g${sup('x')} (mod p) = ${this.g} ^ ${this.x} (mod ${this.p}) = ${this.h}`);
 
     // Step 3. 
     // 
     // public key - h
     // private key - x
-    this.log(`[ElGamal] Generating keys. Step 3. Keys are generated.`);
-    this.log(`Public key: h - ${this.h}`);
-    this.log(`Private key: x - ${this.x}`);
-    this.log(`\n`);
+    this.logger.log(`[ElGamal] Generating keys. Step 3. Keys are generated.`);
+    this.logger.log(`Public key: h - ${this.h}`);
+    this.logger.log(`Private key: x - ${this.x}`);
+    this.logger.log(`\n`);
   }
 
 
@@ -268,7 +271,7 @@ export class ElGamal extends Cryptosystem {
     this.prepareBlocks();
     // this.setSessionKey();
 
-    this.log(`[ElGamal] Encrypting using private key ${this.privateKey} and public key ${this.publicKey}.`, 'color:yellow');
+    this.logger.log(`[ElGamal] Encrypting using private key ${this.privateKey} and public key ${this.publicKey}.`, 'color:yellow');
     const encryptedBlocks: number[] = [];
 
     // choose session key
@@ -287,7 +290,7 @@ export class ElGamal extends Cryptosystem {
     // m = (C1, C2)
     for (let i = 0; i < this.blocks.length; i++) {
       const m = this.blocks[i];
-      this.log(`m${sub(i + 1)} = ${decToBin(m)}₂ = ${m}₁₀`);
+      this.logger.log(`m${sub(i + 1)} = ${decToBin(m)}₂ = ${m}₁₀`);
 
       const largePo = new LargePowerModulo(this.h, k, this.p);
       //const [hk] = largePo.calc();
@@ -296,11 +299,11 @@ export class ElGamal extends Cryptosystem {
       const C2Bin = decToBin(C2, this.blocksize);
 
       // C1 = gᵏ (mod p)
-      this.log(`C₁${sub(i + 1)} = g${sup('k')} (mod p) = ${this.g}${sup(k)} (mod ${this.p}) = ${C1} = ${C1Bin} (chars ${C1Bin.length})`);
+      this.logger.log(`C₁${sub(i + 1)} = g${sup('k')} (mod p) = ${this.g}${sup(k)} (mod ${this.p}) = ${C1} = ${C1Bin} (chars ${C1Bin.length})`);
       // C2 = m * hᵏ (mod p)
-      this.log(`C₂${sub(i + 1)} = m × h${sup('k')} (mod p) = ${m} × ${this.h}${sup(k)} (mod ${this.p}) = ${C2} = ${C2Bin} (chars ${C1Bin.length})`);
+      this.logger.log(`C₂${sub(i + 1)} = m × h${sup('k')} (mod p) = ${m} × ${this.h}${sup(k)} (mod ${this.p}) = ${C2} = ${C2Bin} (chars ${C1Bin.length})`);
 
-      this.log(`\tCiphertext: (${C1}, ${C2})`, 'color:blue');
+      this.logger.log(`\tCiphertext: (${C1}, ${C2})`, 'color:blue');
 
       encryptedBlocks.push(binToDec(`${C1Bin}${C2Bin}`));
     }
@@ -308,15 +311,15 @@ export class ElGamal extends Cryptosystem {
     const encryptedBlocksBin = encryptedBlocks.map((n: number) => decToBin(n, this.blocksize * 2));
     this.blocksEncrypted = encryptedBlocksBin;
 
-    this.log(`Encrypted blocks (decimal): ${encryptedBlocks}`);
-    this.log(`Encrypted blocks (binary): ${this.blocksEncrypted}`);
+    this.logger.log(`Encrypted blocks (decimal): ${encryptedBlocks}`);
+    this.logger.log(`Encrypted blocks (binary): ${this.blocksEncrypted}`);
 
     const encrypted = encryptedBlocksBin.join('');
-    this.log(`Full string (encrypted): ${encrypted}`);
+    this.logger.log(`Full string (encrypted): ${encrypted}`);
     this.ciphertext = encrypted;
 
 
-    this.log(`\n`);
+    this.logger.log(`\n`);
 
     return encrypted;
   }
@@ -329,18 +332,18 @@ export class ElGamal extends Cryptosystem {
   decrypt(text?: string): string {
 
     // this.clearLogs();
-    this.log(`[ElGamal] Decrypting using private key ${this.privateKey} and public key ${this.publicKey}.`, `color:yellow`);
+    this.logger.log(`[ElGamal] Decrypting using private key ${this.privateKey} and public key ${this.publicKey}.`, `color:yellow`);
 
     // code 01001101011111110100110100101100010011011100100101001101001011110100110100111111
     text ??= this.ciphertext;
     // 19839,19756,19913,19759,19775
-    this.log(`Encrypted blocks (binary ciphertext): ${this.ciphertext}`);
+    this.logger.log(`Encrypted blocks (binary ciphertext): ${this.ciphertext}`);
 
     const slicedBlocks: [string, string][] = (slice(text, this.blocksize * 2, true)).map((t: string) => slice(t, this.blocksize) as [string, string]);
-    this.log(`Encrypted blocks (binary): ${JSON.stringify(slicedBlocks)}`);
+    this.logger.log(`Encrypted blocks (binary): ${JSON.stringify(slicedBlocks)}`);
 
     const slicedBlocksDec: [number, number][] = slicedBlocks.map((b: [string, string]) => [binToDec(b[0]), binToDec(b[1])]);
-    this.log(`Encrypted blocks (decimal): ${JSON.stringify(slicedBlocksDec)}`);
+    this.logger.log(`Encrypted blocks (decimal): ${JSON.stringify(slicedBlocksDec)}`);
 
     const decryptedBlocks: string[] = [];
     const decryptedBlocksDec: number[] = [];
@@ -363,7 +366,7 @@ export class ElGamal extends Cryptosystem {
       const CxI = C2 * CxInversePositive;
       const m = moduloPositive(CxI, this.p);
 
-      this.log(`m${sub(i + 1)} = C₂${sub(i + 1)} × (C1₁${sub(i + 1)}${sup('x')})${sup('-1')} mod p
+      this.logger.log(`m${sub(i + 1)} = C₂${sub(i + 1)} × (C1₁${sub(i + 1)}${sup('x')})${sup('-1')} mod p
         = ${C2} × (${C1}${sup(this.x)})${sup('-1')} mod ${this.p}
         = ${C2} × ${Cx}${sup('-1')} mod ${this.p}
         = ${C2} × ${CxInversePositive} mod ${this.p}
@@ -376,20 +379,20 @@ export class ElGamal extends Cryptosystem {
     }
 
 
-    this.log(`Decrypted blocks (decimal): ${decryptedBlocksDec}`);
-    this.log(`Decrypted blocks (binary): ${decryptedBlocks}`);
+    this.logger.log(`Decrypted blocks (decimal): ${decryptedBlocksDec}`);
+    this.logger.log(`Decrypted blocks (binary): ${decryptedBlocks}`);
 
     const decryptedFull = decryptedBlocks.join('');
-    this.log(`Full string decrypted: ${decryptedFull}`);
+    this.logger.log(`Full string decrypted: ${decryptedFull}`);
     const bBlocks = slice(decryptedFull, 8);
     this.blocksDecrypted = bBlocks;
-    this.log(`8 bit blocks (decrypted): ${this.blocksDecrypted}`);
+    this.logger.log(`8 bit blocks (decrypted): ${this.blocksDecrypted}`);
 
 
 
     const decryptedText = binArrayToAscii(bBlocks);
-    this.log(`Plaintext: ${decryptedText}`);
-    this.log(`\n`);
+    this.logger.log(`Plaintext: ${decryptedText}`);
+    this.logger.log(`\n`);
 
     return decryptedText;
 
@@ -403,12 +406,12 @@ export class ElGamal extends Cryptosystem {
    * @returns max block size
    */
   setBlocksize(): number {
-    this.log(`[ElGamal] Calculating blocksize.`, 'color:yellow');
+    this.logger.log(`[ElGamal] Calculating blocksize.`, 'color:yellow');
 
     this.bs = Math.floor(Math.log2(this.p));
-    this.log(`⌊log₂p⌋ = ⌊log₂${this.p}⌋ = ${this.bs}`);
-    this.log(`Blocksize is ${this.bs}.`, 'color:cyan');
-    this.log(`\n`);
+    this.logger.log(`⌊log₂p⌋ = ⌊log₂${this.p}⌋ = ${this.bs}`);
+    this.logger.log(`Blocksize is ${this.bs}.`, 'color:cyan');
+    this.logger.log(`\n`);
 
     return this.bs;
   }
@@ -421,18 +424,18 @@ export class ElGamal extends Cryptosystem {
    */
   prepareBlocks(): number[] {
 
-    this.log('[ElGamal] Preparing blocks for encoding', 'color:yellow')
+    this.logger.log('[ElGamal] Preparing blocks for encoding', 'color:yellow')
 
     const plaintextBin = plaintextToBinArray(this.ptext).flat().join('');
 
-    this.log(`[ElGamal] Plain text string: ${plaintextBin}`);
+    this.logger.log(`[ElGamal] Plain text string: ${plaintextBin}`);
 
     const blocks = slice(plaintextBin, this.blocksize, true);
 
-    this.log(`[ElGamal] Blocks in binary representation: ${blocks}`);
+    this.logger.log(`[ElGamal] Blocks in binary representation: ${blocks}`);
     this.blocks = blocks.map((s: string) => Number.parseInt(s, 2));
-    this.log(`[ElGamal] Blocks in decimal representation: ${this.blocks}`);
-    this.log(`\n`);
+    this.logger.log(`[ElGamal] Blocks in decimal representation: ${this.blocks}`);
+    this.logger.log(`\n`);
 
     return this.blocks;
   }
@@ -452,7 +455,7 @@ export class ElGamal extends Cryptosystem {
    */
   setSessionKey() {
     this.k = getRandomNumber(1, this.p - 1);
-    this.log(`[ElGamal] Session key is a random number between ${1} and ${this.p - 1}: ${this.k}`);
+    this.logger.log(`[ElGamal] Session key is a random number between ${1} and ${this.p - 1}: ${this.k}`);
     return this.k;
   }
 
