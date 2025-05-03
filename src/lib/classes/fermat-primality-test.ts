@@ -21,7 +21,7 @@ export class FermatPrimalityTest {
   n: number = 9007199254740881;
 
   // numberOfIterations
-  k: number = 3;
+  k: number = 10;
 
   constructor(n?: number, k?: number) {
     if (typeof n !== 'undefined') {
@@ -43,16 +43,13 @@ export class FermatPrimalityTest {
     }
   }
 
-
   /**
    * Set the number of interations for running the test
    * @param testNumber 
    */
   setNumberOfIterations(num: number): void {
     this.k = num;
-
   }
-
 
   /**
    * Prime number cannot be even
@@ -66,7 +63,7 @@ export class FermatPrimalityTest {
    * Run the test
    */
   isPrime(): boolean {
-    this.logger.log(`Fermat test. n=${this.n}, k=${this.k}`);
+    this.logger.log(`Тест Ферма на простоту. n=${this.n}, k=${this.k}`);
 
     if (this.isEven()) {
       this.logger.log(`${this.n} is even. It is not prime.`);
@@ -75,6 +72,8 @@ export class FermatPrimalityTest {
 
     let numberIsPrime: boolean = true;
 
+    this.logger.log(`\n\t\t\tСлучайное число\tr\tСоставное\t`);
+
     for (let i = 0; i < this.k; i++) {
       // step 1
       const randomNumber: number = this.getRandomNumber();
@@ -82,23 +81,24 @@ export class FermatPrimalityTest {
       const r = this.calculateR(randomNumber);
       // step 3
       const isC = this.isComposite(r);
-      this.logger.log(`\tFermat test: ${i}\t${randomNumber}\t${r}\t${isC}\t`);
+      this.logger.log(`\tИтерация ${i}: \t${randomNumber}\t${r}\t${isC}\t`);
 
       if (isC) {
         numberIsPrime = false;
         break;
       }
     }
+    this.logger.log(``);
 
     if (numberIsPrime) {
-      this.logger.log(`${this.n} is prime. Probability of an error is ${1 / 2 ** this.k} (${this.k} iterations).`);
+      const probability: number = 1 / 2 ** this.k;
+      this.logger.log(`${this.n} is prime. Probability of an error is ${probability} (${this.k} iterations).`);
     } else {
       this.logger.log(`${this.n} is not prime.`);
     }
     this.logger.log(``);
     return numberIsPrime;
   }
-
 
   /**
    * Step 1
@@ -108,7 +108,6 @@ export class FermatPrimalityTest {
   getRandomNumber() {
     return getRandomNumber(2, this.n - 1);
   }
-
 
   /**
    * Step 2
@@ -122,8 +121,6 @@ export class FermatPrimalityTest {
 
     return results[0];
   }
-
-
 
   /**
    * Step 3
