@@ -12,7 +12,6 @@ import {
   isPrime,
   moduloPositive,
   plaintextToBinArray,
-  shuffle,
   slice,
   stringToArray,
   sub,
