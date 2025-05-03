@@ -218,6 +218,20 @@ export class EuclideanAlgorithm {
 
 
 
+  get initA(): number {
+    if (this._a?.length) {
+      this._a[0];
+    }
+    return 0;
+  }
+
+  get initB(): number {
+    if (this._b?.length) {
+      this._b[0];
+    }
+    return 0;
+  }
+
   // ====================================
   constructor(a?: number, b?: number) {
     if (typeof a === 'number') {
@@ -299,7 +313,7 @@ export class EuclideanAlgorithm {
    * (calc method must be invoked first)
    */
   printResults(): void {
-    this.logger.log(`Таблица Алгоритм Евклида для значений a = ${this.a}, b = ${this.b}`);
+    this.logger.log(`Таблица Алгоритм Евклида для значений a = ${this.initA}, b = ${this.initB}`);
 
     const rows = this.getRows();
     rows.forEach((r: string) => {

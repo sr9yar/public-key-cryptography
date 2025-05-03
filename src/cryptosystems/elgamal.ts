@@ -121,6 +121,7 @@ export class ElGamal extends Cryptosystem {
     // get all factors of a number
     this.logger.log(`[ElGamal] Generating g. p=${this.p}.`, 'color:yellow');
     const factors = getAllFactors(this.p - 1);
+    this.logger.log(`g must be: g ∈ ℤ*ₚ.`);
     this.logger.log(`Getting all factors of p-1 (${this.p - 1}).`);
     this.logger.log(`Factors of ${this.p - 1}: ${factors}.`);
 
@@ -135,7 +136,6 @@ export class ElGamal extends Cryptosystem {
     testFactors.delete(this.p - 1);
 
     this.logger.log(`Acceptable orders of g, O(g): ${acceptableOrders}`);
-
 
     // // output test
     // // all values
@@ -185,11 +185,14 @@ export class ElGamal extends Cryptosystem {
       testingIteration++;
 
       // list of test values 
-      let ls = new Set(shuffle([...testFactors]));
+      // let ls = new Set(shuffle([...testFactors]));
+      let ls = new Set([...testFactors]);
 
       //
-      while (ls.size !== 0) {
-        const next = ls.values().next().value;
+      let next = this.p;
+      while (next !== 0) {
+        next--;
+        // const next = ls.values().next().value;
 
         // const r = getRandomInArray(possibleG);
         const o = findOrderInGroup(next, this.p);
@@ -229,7 +232,7 @@ export class ElGamal extends Cryptosystem {
   /**
    * Generate keys
    */
-  generateKeys() {
+  generateKeys(x?: number) {
     // this.clearLogs();
 
     // this.generateP();
@@ -237,7 +240,7 @@ export class ElGamal extends Cryptosystem {
 
     // Step 1. 1 < x < p - 1
     this.logger.log(`[ElGamal] Generating keys. Step 1. p=${this.p}.`, 'color:yellow');
-    this.x = getRandomNumber(1, this.p - 1);
+    this.x = x ?? getRandomNumber(1, this.p - 1);
     // this.x = 35; // for testing / can be removed
     this.logger.log(`[ElGamal] x must meet the following condition 1 < x < p - 1: 1 < ${this.x} < ${this.p - 1}`);
 
@@ -268,7 +271,7 @@ export class ElGamal extends Cryptosystem {
   /**
    * Encryption algorithm
    */
-  encrypt(): string {
+  encrypt(sessionKey?: number): string {
     // this.clearLogs();
 
     // Step 1 
@@ -280,7 +283,7 @@ export class ElGamal extends Cryptosystem {
     const encryptedBlocks: number[] = [];
 
     // choose session key
-    const k = this.setSessionKey();
+    const k = this.setSessionKey(sessionKey);
     // const k = 7;
 
     // Step 4
@@ -458,8 +461,8 @@ export class ElGamal extends Cryptosystem {
    * Set session key
    * must be 1 < k < p-1
    */
-  setSessionKey() {
-    this.k = getRandomNumber(1, this.p - 1);
+  setSessionKey(k?: number) {
+    this.k = k ?? getRandomNumber(1, this.p - 1);
     this.logger.log(`[ElGamal] Session key is a random number between ${1} and ${this.p - 1}: ${this.k}`);
     return this.k;
   }
