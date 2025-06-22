@@ -54,7 +54,8 @@ export class RSA extends Cryptosystem {
   // Public key
   n: number = 7739;
   // Public key
-  private _e: number = null; // 13
+  // private _e: number = null; // 13
+  private _e: number = 13;
   // private key
   d: number = 6397;
   // blocksize for bin to ASCII conversion
@@ -274,8 +275,16 @@ export class RSA extends Cryptosystem {
    */
   encrypt(): string {
     this.clearLogs();
-
     this.log(`[RSA] Starting encryption`, 'color:blue');
+    this.log(`[RSA] plaintext: ${this.plaintext}`);
+
+    if (this.e === null) {
+      this.log(`[RSA] WARNING e is not set. Generating keys.`);
+      this.generateKeys();
+    }
+
+    this.log(`[RSA] public key: ${this.n}`);
+    this.log(`[RSA] private key: d = ${this.d}, e = ${this.e}`);
 
     this.setBlocksize();
     this.prepareBlocks();
