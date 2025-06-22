@@ -11,6 +11,8 @@
 
 
 // const enc = new RSA();
+// enc.plaintext = 'КОТ';
+
 // // const enc = new ElGamal(13499);
 // // // const enc = new Rabin();
 // // // enc.plaintext = 'code 111 !@!#E@ +++ xui';
@@ -30,4 +32,5 @@
 // // // console.log(toBase64('code1'));
 
 // enc.encrypt();
-// // enc.decrypt();
+
+// enc.decrypt('BToLI');
