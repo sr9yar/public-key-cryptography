@@ -283,8 +283,8 @@ export class RSA extends Cryptosystem {
       this.generateKeys();
     }
 
-    this.log(`[RSA] public key: ${this.n}`);
-    this.log(`[RSA] private key: d = ${this.d}, e = ${this.e}`);
+    this.log(`[RSA] public key: n = ${this.n}, e = ${this.e}`);
+    this.log(`[RSA] private key: d = ${this.d}`);
 
     this.setBlocksize();
     this.prepareBlocks();
