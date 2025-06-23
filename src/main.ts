@@ -1,36 +1,44 @@
+// // import {
+// //   // ElGamal,
+// //   // Rabin,
+// //   RSA,
+// // } from './cryptosystems';
+// // // // import { 
+// // // // toBase64,
+// // // // fromBase64,
+// // // // } from './lib/utility';
 // import {
-//   // ElGamal,
-//   // Rabin,
-//   RSA,
-// } from './cryptosystems';
-// // // import { 
-// // // toBase64,
-// // // fromBase64,
-// // // } from './lib/utility';
+//   RCR
+// } from './lib/algebraic-structures/rcr.class';
 
 
+// //const r = new RCR(14, 5);
+// const r = new RCR(12, 8);
 
-// const enc = new RSA();
-// enc.plaintext = 'КОТ';
+// // r.toString();
+// r.research();
 
-// // const enc = new ElGamal(13499);
-// // // const enc = new Rabin();
-// // // enc.plaintext = 'code 111 !@!#E@ +++ xui';
-// // // enc.e = 17;
-// // // enc.generateKeys();  
-// // enc.generateG();
-// // // enc.p = 10009; 
-// // // enc.g = 5004; 
+// // const enc = new RSA();
+// // enc.plaintext = 'КОТ';
 
-// // enc.encrypt(1616);
-// // enc.decrypt();
+// // // const enc = new ElGamal(13499);
+// // // // const enc = new Rabin();
+// // // // enc.plaintext = 'code 111 !@!#E@ +++ xui';
+// // // // enc.e = 17;
+// // // // enc.generateKeys();  
+// // // enc.generateG();
+// // // // enc.p = 10009; 
+// // // // enc.g = 5004; 
 
-// // // console.log(enc.e);
+// // // enc.encrypt(1616);
+// // // enc.decrypt();
 
-// // // console.log(toBase64('code111'));
-// // // console.log(toBase64('code11'));
-// // // console.log(toBase64('code1'));
+// // // // console.log(enc.e);
 
-// enc.encrypt();
+// // // // console.log(toBase64('code111'));
+// // // // console.log(toBase64('code11'));
+// // // // console.log(toBase64('code1'));
 
-// enc.decrypt('BToLI');
+// // enc.encrypt();
+
+// // enc.decrypt('BToLI');

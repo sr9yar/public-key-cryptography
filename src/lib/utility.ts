@@ -481,7 +481,24 @@ export function primeFactors(n: number): number[] {
   return factors.sort((a, b) => a - b);
 }
 
-
+/**
+ * Get a map for prime factors 
+ * with their respective count
+ * @param n 
+ * @returns Map<primeNumber, count>
+ */
+export function getPrimesMap(n: number): Map<number, number> {
+  const factors: Map<number, number> = new Map();
+  let divisor: number = 2;
+  while (n >= 2) {
+    while (n % divisor === 0) {
+      factors.set(divisor, (factors.get(divisor) || 0) + 1);
+      n /= divisor;
+    }
+    divisor++;
+  }
+  return factors;
+}
 
 /**
  * Get all factors
@@ -490,19 +507,6 @@ export function primeFactors(n: number): number[] {
  * @returns 
  */
 export function getAllFactors(n: number) {
-
-  function getPrimesMap(n: number): Map<number, number> {
-    const factors: Map<number, number> = new Map();
-    let divisor: number = 2;
-    while (n >= 2) {
-      while (n % divisor === 0) {
-        factors.set(divisor, (factors.get(divisor) || 0) + 1);
-        n /= divisor;
-      }
-      divisor++;
-    }
-    return factors;
-  }
 
   const primeFactors: Map<number, number> = getPrimesMap(n);
 
@@ -740,4 +744,123 @@ export function getRandomCoprime(n: number, notLess: number = 10) {
   }
 
   return coprime;
+}
+
+/**
+ * Is integer number
+ * @param n 
+ */
+export function isInt(n: number) {
+  return n % 1 === 0;
+}
+
+
+/**
+ * Find whole divisor modulo
+ * @param n1
+ * @param n2
+ * @param p modulo
+ * @returns [whole number, multiplicator]
+ */
+export function divideModulo(dividend: number, divisor: number, p: number) {
+
+  if (divisor === 0) {
+    logger.log(`ERROR division by 0 in divideModulo`, 'color:red');
+    return [0, 0];
+  }
+
+  // multiplicaßtor
+  let m = 0;
+
+  // hard break
+  let counter = 0;
+
+  let d = dividend / divisor;
+  dividend = dividend % divisor;
+
+  let divisionResult = Math.floor(d);
+
+
+  // logger.log(` > > > > > > > > > `);
+  // logger.log(`${dividend} ${divisor} ${p}\n`);
+
+  while (!isInt(d)) {
+
+    dividend += p;
+    d = dividend / divisor;
+    dividend = dividend % divisor;
+
+    divisionResult += Math.floor(d);
+    m += 1;
+
+    // logger.log(`${m} ${dividend} ${d}`);
+
+    if (counter > 1000) {
+      logger.log(`ERROR: the number of interations is too big (calculating x3).`);
+      break;
+    }
+  }
+
+  return [divisionResult, m];
+}
+
+/**
+ * Russian peasant multiplication
+ * 
+ * multiplication of two big number modulo
+ * @param a big number 1
+ * @param b big number 2
+ * @param n modulo
+ * @returns 
+ */
+
+export function multiplyMod(a: number | bigint, b: number | bigint, n: number) {
+  a = BigInt(a) % BigInt(n);
+  b = BigInt(b) % BigInt(n);
+  let res = 0n;
+  a = a < 0n ? a + BigInt(n) : a;
+  b = b < 0n ? b + BigInt(n) : b;
+
+  while (b > 0n) {
+    if (b % 2n === 1n) {
+      res = (res + a) % BigInt(n);
+    }
+    a = (a * 2n) % BigInt(n);
+    b = b / 2n;
+  }
+  return Number(res);
+}
+
+
+/**
+ * Get all summonds of a number
+ * @param target 
+ * @returns 
+ */
+export function getAllSummands(target: number): number[] {
+  let summands: number[] = [1]; // Start with 1
+  let sum = 1;
+
+  // Double until exceeding the target
+  while (sum * 2 <= target) {
+    summands.push(sum);
+    sum *= 2;
+  }
+
+  // Now add remaining terms (binary decomposition)
+  let remaining = target - sum;
+  let tempSummands = [...summands].reverse();
+
+  for (const num of tempSummands) {
+    if (num <= remaining) {
+      summands.push(num);
+      remaining -= num;
+    }
+  }
+
+  if (remaining > 0) {
+    summands.push(remaining);
+  }
+
+  return summands;
 }
